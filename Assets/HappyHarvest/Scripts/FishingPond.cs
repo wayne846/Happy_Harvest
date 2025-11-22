@@ -7,9 +7,16 @@ namespace HappyHarvest
     {
         [SerializeField]
         private GameObject pondHint;
+        private Coroutine showHint;
+
         public override void InteractedWith()
         {
-            StartCoroutine(ShowHint());
+            if (showHint != null)
+            {
+                StopCoroutine(showHint);
+            }
+
+            showHint = StartCoroutine(ShowHint());
         }
 
         IEnumerator ShowHint()
