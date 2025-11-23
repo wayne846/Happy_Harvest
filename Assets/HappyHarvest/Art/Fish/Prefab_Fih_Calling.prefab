@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 6798813573155882070}
   - component: {fileID: 6664984001720249177}
   m_Layer: 0
-  m_Name: Prefab_Basket_Visual
+  m_Name: Prefab_Fih_Calling
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
