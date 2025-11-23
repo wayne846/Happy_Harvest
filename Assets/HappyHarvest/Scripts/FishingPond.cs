@@ -26,6 +26,8 @@ namespace HappyHarvest
             yield return new WaitForSeconds(2.0f);
 
             pondHint.SetActive(false);
+            GameManager instance = GameManager.Instance;
+            instance.Player.AddItem(instance.ItemDatabase.GetFromID("fih_calling"));
         }
     }
 
