@@ -122,15 +122,15 @@
 
 .game-popup {
     flex-grow: 1;
-    background-color: rgba(0, 127, 226, 0);
-    width: 100%;
-    height: 100%;
-    position: absolute;
-    align-items: center;
-    justify-content: space-around;
-    display: flex;
-    visibility: hidden;
-}
+        background-color: rgba(0, 127, 226, 0);
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        align-items: center;
+        justify-content: space-around;
+        display: flex;
+        visibility: hidden;
+    }
 
 #Blocker {
     transition: opacity 1s ease-in;
