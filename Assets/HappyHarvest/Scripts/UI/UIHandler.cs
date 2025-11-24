@@ -53,6 +53,7 @@ namespace HappyHarvest
 
         protected SettingMenu m_SettingMenu;
         protected WarehouseUI m_WarehouseUI;
+        protected FishingSpotUI m_FishingSpotUI;
 
         // Fade to balck helper
         protected VisualElement m_Blocker;
@@ -103,6 +104,8 @@ namespace HappyHarvest
             m_SettingMenu.OnClose += () => { GameManager.Instance.Resume(); };
 
             m_WarehouseUI = new WarehouseUI(m_Document.rootVisualElement.Q<VisualElement>("WarehousePopup"), MarketEntryTemplate);
+
+            m_FishingSpotUI = new FishingSpotUI(m_Document.rootVisualElement.Q<VisualElement>("FishingSpotPopup"));
 
             m_Blocker = m_Document.rootVisualElement.Q<VisualElement>("Blocker");
             
@@ -372,6 +375,11 @@ namespace HappyHarvest
                     m_InventorySlots[i].RemoveFromClassList("equipped");
                 }
             }
+        }
+
+        public static void OpenFishingSpot()
+        {
+            s_Instance.m_FishingSpotUI.Open();
         }
     }
 }
