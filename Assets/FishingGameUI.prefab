@@ -27,7 +27,7 @@ RectTransform:
   m_GameObject: {fileID: 3236761314468778202}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.5379408, y: 0.5379408, z: 0.5379408}
+  m_LocalScale: {x: 0.8, y: 0.8, z: 0.5379408}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 8099419031510717159}
@@ -286,6 +286,7 @@ GameObject:
   - component: {fileID: 6897115817385497393}
   - component: {fileID: 8669223420117553179}
   - component: {fileID: 213707061304917477}
+  - component: {fileID: 7643165188797467310}
   m_Layer: 0
   m_Name: FishingGameUI
   m_TagString: Untagged
@@ -376,6 +377,22 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
+--- !u!114 &7643165188797467310
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7325263236674685400}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c72d847fa9b28cb479a3b47ea922bfee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  CloseButton: {fileID: 2984721649980070889}
+  ReelBar: {fileID: 1381452904992490187}
+  HeightPerUnit: 7
+  ReelDefaultPosition: -350
 --- !u!1 &8746362710355526441
 GameObject:
   m_ObjectHideFlags: 0
@@ -602,11 +619,24 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5339826830140744492, guid: b4c884e881674054a9152273b9070887, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -350
+      objectReference: {fileID: 0}
+    - target: {fileID: 7610341054013925759, guid: b4c884e881674054a9152273b9070887, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 770
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b4c884e881674054a9152273b9070887, type: 3}
+--- !u!1 &1381452904992490187 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5076155044390252150, guid: b4c884e881674054a9152273b9070887, type: 3}
+  m_PrefabInstance: {fileID: 6150166699777879229}
+  m_PrefabAsset: {fileID: 0}
 --- !u!224 &8099419031510717159 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 2683902064216407642, guid: b4c884e881674054a9152273b9070887, type: 3}

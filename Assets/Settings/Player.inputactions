@@ -42,7 +42,7 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Fishing",
+                    "name": "FishingReel",
                     "type": "Button",
                     "id": "4f925a68-0985-4598-a2ec-ad07820b3ed7",
                     "expectedControlType": "Button",
@@ -257,7 +257,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Fishing",
+                    "action": "FishingReel",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

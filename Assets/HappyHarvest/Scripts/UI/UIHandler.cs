@@ -32,7 +32,10 @@ namespace HappyHarvest
         
         [Header("Sounds")] 
         public AudioClip MarketSellSound;
-        
+
+        [Header("UI Prefab")]
+        public GameObject FishingGameUIPrefab;
+
         protected UIDocument m_Document;
         
         protected List<VisualElement> m_InventorySlots;
@@ -54,6 +57,7 @@ namespace HappyHarvest
         protected SettingMenu m_SettingMenu;
         protected WarehouseUI m_WarehouseUI;
         protected FishingSpotUI m_FishingSpotUI;
+        protected FishingGameUI m_FishingGameUI;
 
         // Fade to balck helper
         protected VisualElement m_Blocker;
@@ -106,6 +110,8 @@ namespace HappyHarvest
             m_WarehouseUI = new WarehouseUI(m_Document.rootVisualElement.Q<VisualElement>("WarehousePopup"), MarketEntryTemplate);
 
             m_FishingSpotUI = new FishingSpotUI(m_Document.rootVisualElement.Q<VisualElement>("FishingSpotPopup"));
+
+            m_FishingGameUI = new FishingGameUI(Instantiate(FishingGameUIPrefab));
 
             m_Blocker = m_Document.rootVisualElement.Q<VisualElement>("Blocker");
             
@@ -380,6 +386,19 @@ namespace HappyHarvest
         public static void OpenFishingSpot()
         {
             s_Instance.m_FishingSpotUI.Open();
+        }
+
+        public static void UpdateFishingGameUI(float reelPosition)
+        {
+            s_Instance.m_FishingGameUI.UpdateUI(reelPosition);
+        }
+        public static void OpenFishingGame()
+        {
+            s_Instance.m_FishingGameUI.Open();
+        }
+        public static void CloseFishingGame()
+        {
+            s_Instance.m_FishingGameUI.Close();
         }
     }
 }

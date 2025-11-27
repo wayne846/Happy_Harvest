@@ -7,10 +7,11 @@ namespace HappyHarvest
     public class FishingSystem : MonoBehaviour
     {
         [SerializeField]
-        private GameObject fishingGameGO;
-        private FishingGameUI fishingGameUI;
+        [Tooltip("This decides how much reel progress drops per second.")]
+        private float ReelDropRate;
 
         private List<Pond> pondList;
+        private float reelPosition;
         private float fishPosition;
         private float remainTime;
         private float captureProgress;
@@ -20,11 +21,6 @@ namespace HappyHarvest
         private void Awake()
         {
             GameManager.Instance.FishingSystem = this;
-
-            fishingGameUI = fishingGameGO.GetComponent<FishingGameUI>();
-            fishingGameUI.Init(this);
-
-            fishingGameGO.SetActive(false);
         }
 
 
@@ -35,9 +31,6 @@ namespace HappyHarvest
                 StopCoroutine(fishingGame);
                 fishingGame = null;
             }
-
-            GameManager.Instance.Pause();
-
             fishingGame = StartCoroutine(FishingGame());
         }
 
@@ -49,18 +42,30 @@ namespace HappyHarvest
                 fishingGame = null;
             }
 
-            GameManager.Instance.Resume();
+            GameManager.Instance.Player.ToggleFish(false);
+        }
+
+        public void ReelIn()
+        {
+            
+            reelPosition += 5.0f;
+            reelPosition = Mathf.Min(reelPosition, 100);
         }
 
         private IEnumerator FishingGame()
         {
-            fishingGameUI.Show();
-
+            UIHandler.OpenFishingGame();
+            GameManager.Instance.Player.ToggleFish(true);
+            reelPosition = 0f;
+            remainTime = 100f;
             while (remainTime > 0)
             {
-
+                reelPosition -= ReelDropRate * Time.deltaTime;
+                reelPosition = Mathf.Max(reelPosition, 0);
 
                 remainTime -= Time.deltaTime;
+
+                UIHandler.UpdateFishingGameUI(reelPosition);
                 yield return null;
             }
 
