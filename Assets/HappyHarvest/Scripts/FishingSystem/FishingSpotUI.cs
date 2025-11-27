@@ -55,8 +55,8 @@ namespace HappyHarvest
 
         void StartFishing()
         {
-            GameManager.Instance.FishingSystem.StartFishing();
             Close();
+            GameManager.Instance.FishingSystem.StartFishing();  
         }
     }
 }

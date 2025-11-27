@@ -30,7 +30,13 @@ namespace HappyHarvest
 
         public void StartFishing()
         {
-            StopFishing();
+            if (fishingGame != null)
+            {
+                StopCoroutine(fishingGame);
+                fishingGame = null;
+            }
+
+            GameManager.Instance.Pause();
 
             fishingGame = StartCoroutine(FishingGame());
         }
@@ -42,6 +48,8 @@ namespace HappyHarvest
                 StopCoroutine(fishingGame);
                 fishingGame = null;
             }
+
+            GameManager.Instance.Resume();
         }
 
         private IEnumerator FishingGame()
