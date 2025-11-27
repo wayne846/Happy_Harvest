@@ -19,7 +19,8 @@ namespace HappyHarvest
     [Serializable]
     public class InventorySystem
     {
-        public const int InventorySize = 9;
+        public const int HotBarSize = 9;
+        public const int InventorySize = 27;
 
         [Serializable]
         public class InventoryEntry
@@ -196,7 +197,7 @@ namespace HappyHarvest
         public void EquipNext()
         {
             EquippedItemIdx += 1;
-            if (EquippedItemIdx >= InventorySize) EquippedItemIdx = 0;
+            if (EquippedItemIdx >= HotBarSize) EquippedItemIdx = 0;
 
             UIHandler.UpdateInventory(this);
         }
@@ -204,7 +205,7 @@ namespace HappyHarvest
         public void EquipPrev()
         {
             EquippedItemIdx -= 1;
-            if (EquippedItemIdx < 0) EquippedItemIdx = InventorySize - 1;
+            if (EquippedItemIdx < 0) EquippedItemIdx = HotBarSize - 1;
 
             UIHandler.UpdateInventory(this);
         }
@@ -215,6 +216,24 @@ namespace HappyHarvest
                 return;
 
             EquippedItemIdx = index;
+            UIHandler.UpdateInventory(this);
+        }
+
+        public void SwapEntries(int indexA, int indexB)
+        {
+            if (indexA == indexB) return;
+            if (indexA < 0 || indexA >= InventorySize || indexB < 0 || indexB >= InventorySize) return;
+
+            var tempItem = Entries[indexA].Item;
+            var tempStack = Entries[indexA].StackSize;
+
+            Entries[indexA].Item = Entries[indexB].Item;
+            Entries[indexA].StackSize = Entries[indexB].StackSize;
+
+            Entries[indexB].Item = tempItem;
+            Entries[indexB].StackSize = tempStack;
+
+            // 如果交換的物品涉及當前裝備的格子，需要通知 UI 更新
             UIHandler.UpdateInventory(this);
         }
 

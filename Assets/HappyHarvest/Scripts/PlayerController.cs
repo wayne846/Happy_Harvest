@@ -44,6 +44,7 @@ namespace HappyHarvest
         private InputAction m_NextItemAction;
         private InputAction m_PrevItemAction;
         private InputAction m_UseItemAction;
+        private InputAction m_ToggleInventoryAction;
 
         private Vector3 m_CurrentWorldMousePos;
         private Vector2 m_CurrentLookDirection;
@@ -119,7 +120,11 @@ namespace HappyHarvest
             m_UseItemAction.Enable();
 
             m_UseItemAction.performed += context => UseObject();
-            
+
+            m_ToggleInventoryAction = InputAction.FindAction("Gameplay/Inventory");
+            m_ToggleInventoryAction.Enable();
+            m_ToggleInventoryAction.performed += context => ToggleInventory();
+
             m_CurrentLookDirection = Vector2.right;
             
             m_Inventory.Init();
@@ -449,6 +454,19 @@ namespace HappyHarvest
                     Animator = newVisual.GetComponentInChildren<Animator>(),
                     AnimatorHash = Animator.StringToHash(item.PlayerAnimatorTriggerUse)
                 };
+            }
+        }
+
+        void ToggleInventory()
+        {
+            bool isOpen = UIHandler.IsInventoryOpen;
+            if (isOpen)
+            {
+                UIHandler.CloseInventory();
+            }
+            else
+            {
+                UIHandler.OpenInventory();
             }
         }
     }

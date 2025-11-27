@@ -63,6 +63,9 @@ namespace HappyHarvest
         private Label m_RainLabel;
         private Label m_ThunderLabel;
 
+        protected VisualElement m_InventoryPopup; // 大背包介面
+        public static bool IsInventoryOpen => s_Instance.m_InventoryPopup.visible;
+
         void Awake()
         {
             s_Instance = this;
@@ -124,6 +127,9 @@ namespace HappyHarvest
             m_SunLabel.AddManipulator(new Clickable(() => { GameManager.Instance.WeatherSystem?.ChangeWeather(WeatherSystem.WeatherType.Sun); }));
             m_RainLabel.AddManipulator(new Clickable(() => { GameManager.Instance.WeatherSystem?.ChangeWeather(WeatherSystem.WeatherType.Rain); }));
             m_ThunderLabel.AddManipulator(new Clickable(() => { GameManager.Instance.WeatherSystem?.ChangeWeather(WeatherSystem.WeatherType.Thunder); }));
+
+            m_InventoryPopup = m_Document.rootVisualElement.Q<VisualElement>("InventoryPopup");
+            m_InventoryPopup.visible = false;
         }
         
         
@@ -380,6 +386,39 @@ namespace HappyHarvest
         public static void OpenFishingSpot()
         {
             s_Instance.m_FishingSpotUI.Open();
+        }
+
+        public static void OpenInventory()
+        {
+            s_Instance.OpenInventory_Internal();
+        }
+
+        public static void CloseInventory()
+        {
+            s_Instance.CloseInventory_Internal();
+        }
+
+        void OpenInventory_Internal()
+        {
+            if (m_InventoryPopup.visible) return;
+
+            m_InventoryPopup.visible = true;
+            GameManager.Instance.Pause(); // 暫停遊戲
+            SoundManager.Instance.PlayUISound();
+
+            // 重新繪製整個大背包
+            RefreshFullInventoryUI();
+        }
+
+        void CloseInventory_Internal()
+        {
+            m_InventoryPopup.visible = false;
+            GameManager.Instance.Resume(); // 恢復遊戲
+        }
+
+        void RefreshFullInventoryUI()
+        {
+
         }
     }
 }
