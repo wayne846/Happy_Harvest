@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using Cinemachine;
 using UnityEngine;
@@ -42,7 +43,7 @@ namespace HappyHarvest
                 return s_Instance;
             }
         }
-
+        public FishingSystem FishingSystem { get; set; }
         public TerrainManager Terrain { get; set; }
         public PlayerController Player { get; set; }
         public DayCycleHandler DayCycleHandler { get; set; }

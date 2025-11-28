@@ -44,6 +44,7 @@ namespace HappyHarvest
         private InputAction m_NextItemAction;
         private InputAction m_PrevItemAction;
         private InputAction m_UseItemAction;
+        private InputAction m_FishingReelAction;
 
         private Vector3 m_CurrentWorldMousePos;
         private Vector2 m_CurrentLookDirection;
@@ -55,6 +56,7 @@ namespace HappyHarvest
         private bool m_IsOverUI = false;
 
         private bool m_CanControl = true;
+        private bool m_CanFish = false;
 
         private Animator m_Animator;
 
@@ -119,7 +121,11 @@ namespace HappyHarvest
             m_UseItemAction.Enable();
 
             m_UseItemAction.performed += context => UseObject();
-            
+
+            m_FishingReelAction = InputAction.FindAction("Gameplay/FishingReel");
+            m_FishingReelAction.Disable();
+            m_FishingReelAction.performed += context => FishingReelIn();
+
             m_CurrentLookDirection = Vector2.right;
             
             m_Inventory.Init();
@@ -352,6 +358,20 @@ namespace HappyHarvest
                 m_UseItemAction.Disable();
             }
         }
+        public void ToggleFish(bool canFish)
+        {
+            m_CanFish = canFish;
+            if (canFish)
+            {
+                m_FishingReelAction.Enable();
+                ToggleControl(false);
+            }
+            else
+            {
+                m_FishingReelAction.Disable();
+                ToggleControl(true);
+            }
+        }
 
         public void UseItem()
         {
@@ -450,6 +470,11 @@ namespace HappyHarvest
                     AnimatorHash = Animator.StringToHash(item.PlayerAnimatorTriggerUse)
                 };
             }
+        }
+
+        void FishingReelIn()
+        {
+            GameManager.Instance.FishingSystem.ReelIn();
         }
     }
 
