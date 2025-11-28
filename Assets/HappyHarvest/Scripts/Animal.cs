@@ -1,14 +1,6 @@
 using UnityEngine;
 using TMPro;
-// ---------------------------------------------------------
-// ★ 關鍵修改：這裡要加上您剛才查到的 namespace
-// 如果 PlayerController 裡寫的是 namespace HappyHarvest; 
-// 那就加上下面這行：
-using HappyHarvest;
-
-// 如果 Item 在另一個 namespace (例如 HappyHarvest.Items)，也要加上：
-// using HappyHarvest.Items;
-// ---------------------------------------------------------
+using HappyHarvest; // 引用 namespace
 
 public class Animal : MonoBehaviour
 {
@@ -17,9 +9,10 @@ public class Animal : MonoBehaviour
     [SerializeField] private float hungerRate = 5f;
 
     [Header("產出設定")]
-    // ★ 關鍵修改：如果套件裡的物品腳本叫 "ItemData" 而不是 "Item"
-    // 請把下面的 'Item' 改成 'ItemData'
     [SerializeField] private Item produceItem;
+
+    [Header("餵食設定")]
+    [SerializeField] private Item feedItem; // 請拖入 Hay
 
     public PlayerController playerController;
 
@@ -30,6 +23,7 @@ public class Animal : MonoBehaviour
     {
         playerController = GameManager.Instance.Player;
     }
+
     void Update()
     {
         hunger += hungerRate * Time.deltaTime;
@@ -50,15 +44,56 @@ public class Animal : MonoBehaviour
 
     public void Feed()
     {
-        hunger = 0;
-        Debug.Log("動物已餵食");
+        if (feedItem == null)
+        {
+            Debug.LogError("錯誤：請在 Inspector 設定 Feed Item！");
+            return;
+        }
+
+        if (playerController != null)
+        {
+            var inventory = playerController.Inventory;
+
+            // ★ 關鍵修改：檢查「手上拿的裝備」是不是飼料
+            if (inventory.EquippedItem == feedItem)
+            {
+                // 手上確實拿著飼料，開始執行刪除邏輯
+
+                // 1. 為了安全刪除，我們還是需要找到這個物品在背包的哪個索引(Index)
+                int foundIndex = -1;
+                for (int i = 0; i < inventory.Entries.Length; i++)
+                {
+                    // 找到第一個符合飼料的格子
+                    if (inventory.Entries[i].Item == feedItem)
+                    {
+                        foundIndex = i;
+                        break;
+                    }
+                }
+
+                // 2. 執行刪除
+                if (foundIndex != -1)
+                {
+                    inventory.Remove(foundIndex, 1); // 刪除一個
+                    hunger = 0;
+                    Debug.Log($"餵食成功！消耗了手上的 {feedItem.name}");
+                }
+            }
+            else
+            {
+                // 手上拿錯東西，或是空手
+                if (inventory.EquippedItem == null)
+                    Debug.Log("餵食失敗：請將飼料 (Hay) 拿在手上！(目前空手)");
+                else
+                    Debug.Log($"餵食失敗：請將飼料拿在手上！(目前拿著 {inventory.EquippedItem.name})");
+            }
+        }
     }
 
     public void Collect()
     {
         if (playerController != null && produceItem != null)
         {
-            // ★ 如果這裡報錯，請確認 AddItem 括號內需要的參數
             bool success = playerController.AddItem(produceItem);
             if (success) Debug.Log("收成成功");
         }

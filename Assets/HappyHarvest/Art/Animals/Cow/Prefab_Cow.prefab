@@ -156,8 +156,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 38.3, y: -37.108}
-  m_SizeDelta: {x: 200, y: 50}
+  m_AnchoredPosition: {x: -10, y: -11.5653}
+  m_SizeDelta: {x: 4.9588, y: 1.989}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1565645749831310665
 CanvasRenderer:
@@ -214,8 +214,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 36
-  m_fontSizeBase: 36
+  m_fontSize: 1
+  m_fontSizeBase: 1
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -250,7 +250,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 0, y: 0, z: 0, w: -7.759552}
+  m_margin: {x: -0.032577515, y: 0.19669819, z: 0.07960272, w: -0.17431831}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0
@@ -292,8 +292,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: -0.9767, y: 51.7076}
-  m_SizeDelta: {x: 130.2466, y: 124.2153}
+  m_AnchoredPosition: {x: 9.9714, y: 14.6792}
+  m_SizeDelta: {x: 41.2311, y: 20.1576}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!223 &8963573646562627631
 Canvas:
@@ -316,7 +316,7 @@ Canvas:
   m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 100
   m_TargetDisplay: 0
 --- !u!114 &7528874285169086035
 MonoBehaviour:
@@ -664,10 +664,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   hunger: 100
-  hungerRate: 5
-  produceItem: {fileID: 0}
+  hungerRate: 1
+  produceItem: {fileID: 11400000, guid: fda80188332cc7d4baa924f7fd6f52e4, type: 2}
+  feedItem: {fileID: 11400000, guid: 9e9f866ca785dac48a735a2cc4daf87a, type: 2}
   playerController: {fileID: 0}
-  hungerText: {fileID: 0}
+  hungerText: {fileID: 7506689134735656799}
 --- !u!4 &6625395460638792462 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 88036800646919882, guid: 96e3d9dd1d3738946967b0ff98884679, type: 3}
