@@ -19,7 +19,7 @@ MonoBehaviour:
   Consumable: 1
   BuyPrice: -1
   VisualPrefab: {fileID: 6290163647523993554, guid: 0fb18c8c222c40847a05c56dae7c4aaf, type: 3}
-  PlayerAnimatorTriggerUse: Eating
+  PlayerAnimatorTriggerUse: 
   UseSound:
   - {fileID: 8300000, guid: f09ed1dd35d0d7d4a814d2991829c7de, type: 3}
   - {fileID: 8300000, guid: e53864a914cf2d34ca1e1b71b5a745a7, type: 3}
