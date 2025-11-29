@@ -479,6 +479,7 @@ namespace HappyHarvest
         void FishingReelIn()
         {
             GameManager.Instance.FishingSystem.ReelIn();
+        }
         void ToggleInventory()
         {
             bool isOpen = UIHandler.IsInventoryOpen;

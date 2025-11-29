@@ -461,6 +461,7 @@ namespace HappyHarvest
         public static void CloseFishingGame()
         {
             s_Instance.m_FishingGameUI.Close();
+        }
         public static void OpenInventory(InventorySystem system)
         {
             s_Instance.OpenInventory_Internal(system);
