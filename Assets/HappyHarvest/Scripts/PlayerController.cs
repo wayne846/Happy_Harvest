@@ -45,6 +45,7 @@ namespace HappyHarvest
         private InputAction m_PrevItemAction;
         private InputAction m_UseItemAction;
         private InputAction m_FishingReelAction;
+        private InputAction m_ToggleInventoryAction;
 
         private Vector3 m_CurrentWorldMousePos;
         private Vector2 m_CurrentLookDirection;
@@ -125,6 +126,9 @@ namespace HappyHarvest
             m_FishingReelAction = InputAction.FindAction("Gameplay/FishingReel");
             m_FishingReelAction.Disable();
             m_FishingReelAction.performed += context => FishingReelIn();
+            m_ToggleInventoryAction = InputAction.FindAction("Gameplay/Inventory");
+            m_ToggleInventoryAction.Enable();
+            m_ToggleInventoryAction.performed += context => ToggleInventory();
 
             m_CurrentLookDirection = Vector2.right;
             
@@ -475,6 +479,17 @@ namespace HappyHarvest
         void FishingReelIn()
         {
             GameManager.Instance.FishingSystem.ReelIn();
+        void ToggleInventory()
+        {
+            bool isOpen = UIHandler.IsInventoryOpen;
+            if (isOpen)
+            {
+                UIHandler.CloseInventory();
+            }
+            else
+            {
+                UIHandler.OpenInventory(m_Inventory);
+            }
         }
     }
 

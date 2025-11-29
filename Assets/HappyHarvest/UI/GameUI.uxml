@@ -89,4 +89,119 @@
     </ui:VisualElement>
     <ui:Instance template="SettingsMenu" name="SettingsMenu" picking-mode="Ignore" style="width: 100%; height: 100%; position: absolute; opacity: 1;" />
     <ui:VisualElement name="Blocker" picking-mode="Ignore" style="flex-grow: 1; background-color: rgb(0, 0, 0); opacity: 0; -unity-text-outline-color: rgb(0, 46, 255);" />
+    <ui:VisualElement name="InventoryPopup" style="visibility: visible; opacity: 1; display: none; overflow: visible; -unity-background-image-tint-color: rgb(255, 255, 255); -unity-background-scale-mode: stretch-to-fill; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.51); align-items: center; justify-content: space-around;">
+        <ui:VisualElement name="InventoryBackground" style="flex-grow: 0; width: 830px; height: 500px; justify-content: flex-end; background-color: rgb(134, 85, 49); align-items: center; opacity: 1; flex-basis: auto; margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; left: auto; right: auto; border-top-left-radius: 30px; border-top-right-radius: 30px; border-bottom-right-radius: 30px; border-bottom-left-radius: 30px; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; display: flex;">
+            <ui:VisualElement name="FullInventoryContainer" style="flex-grow: 0; width: 810px; align-self: center; flex-wrap: wrap-reverse; flex-direction: row; height: 60%; justify-content: center; margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-right: 0; padding-left: 0; align-items: flex-end; flex-shrink: 0;">
+                <ui:VisualElement name="InventoryEntry" style="flex-grow: 0; width: 80px; height: 80px; flex-direction: row;">
+                    <ui:VisualElement name="Item" style="flex-grow: 1;" />
+                    <ui:Label tabindex="-1" text="0" display-tooltip-when-elided="true" name="ItemCount" style="position: absolute; right: -5px; bottom: -5px; background-color: rgb(255, 255, 255); width: 25px; height: 25px; -unity-text-align: middle-center;" />
+                </ui:VisualElement>
+                <ui:VisualElement name="InventoryEntry" style="flex-grow: 0; width: 80px; height: 80px; flex-direction: row;">
+                    <ui:VisualElement name="Item" style="flex-grow: 1;" />
+                    <ui:Label tabindex="-1" text="0" display-tooltip-when-elided="true" name="ItemCount" style="position: absolute; right: -5px; bottom: -5px; background-color: rgb(255, 255, 255); width: 25px; height: 25px; -unity-text-align: middle-center;" />
+                </ui:VisualElement>
+                <ui:VisualElement name="InventoryEntry" style="flex-grow: 0; width: 80px; height: 80px; flex-direction: row;">
+                    <ui:VisualElement name="Item" style="flex-grow: 1;" />
+                    <ui:Label tabindex="-1" text="0" display-tooltip-when-elided="true" name="ItemCount" style="position: absolute; right: -5px; bottom: -5px; background-color: rgb(255, 255, 255); width: 25px; height: 25px; -unity-text-align: middle-center;" />
+                </ui:VisualElement>
+                <ui:VisualElement name="InventoryEntry" style="flex-grow: 0; width: 80px; height: 80px; flex-direction: row;">
+                    <ui:VisualElement name="Item" style="flex-grow: 1;" />
+                    <ui:Label tabindex="-1" text="0" display-tooltip-when-elided="true" name="ItemCount" style="position: absolute; right: -5px; bottom: -5px; background-color: rgb(255, 255, 255); width: 25px; height: 25px; -unity-text-align: middle-center;" />
+                </ui:VisualElement>
+                <ui:VisualElement name="InventoryEntry" style="flex-grow: 0; width: 80px; height: 80px; flex-direction: row;">
+                    <ui:VisualElement name="Item" style="flex-grow: 1;" />
+                    <ui:Label tabindex="-1" text="0" display-tooltip-when-elided="true" name="ItemCount" style="position: absolute; right: -5px; bottom: -5px; background-color: rgb(255, 255, 255); width: 25px; height: 25px; -unity-text-align: middle-center;" />
+                </ui:VisualElement>
+                <ui:VisualElement name="InventoryEntry" style="flex-grow: 0; width: 80px; height: 80px; flex-direction: row;">
+                    <ui:VisualElement name="Item" style="flex-grow: 1;" />
+                    <ui:Label tabindex="-1" text="0" display-tooltip-when-elided="true" name="ItemCount" style="position: absolute; right: -5px; bottom: -5px; background-color: rgb(255, 255, 255); width: 25px; height: 25px; -unity-text-align: middle-center;" />
+                </ui:VisualElement>
+                <ui:VisualElement name="InventoryEntry" style="flex-grow: 0; width: 80px; height: 80px; flex-direction: row;">
+                    <ui:VisualElement name="Item" style="flex-grow: 1;" />
+                    <ui:Label tabindex="-1" text="0" display-tooltip-when-elided="true" name="ItemCount" style="position: absolute; right: -5px; bottom: -5px; background-color: rgb(255, 255, 255); width: 25px; height: 25px; -unity-text-align: middle-center;" />
+                </ui:VisualElement>
+                <ui:VisualElement name="InventoryEntry" style="flex-grow: 0; width: 80px; height: 80px; flex-direction: row;">
+                    <ui:VisualElement name="Item" style="flex-grow: 1;" />
+                    <ui:Label tabindex="-1" text="0" display-tooltip-when-elided="true" name="ItemCount" style="position: absolute; right: -5px; bottom: -5px; background-color: rgb(255, 255, 255); width: 25px; height: 25px; -unity-text-align: middle-center;" />
+                </ui:VisualElement>
+                <ui:VisualElement name="InventoryEntry" style="flex-grow: 0; width: 80px; height: 80px; flex-direction: row;">
+                    <ui:VisualElement name="Item" style="flex-grow: 1;" />
+                    <ui:Label tabindex="-1" text="0" display-tooltip-when-elided="true" name="ItemCount" style="position: absolute; right: -5px; bottom: -5px; background-color: rgb(255, 255, 255); width: 25px; height: 25px; -unity-text-align: middle-center;" />
+                </ui:VisualElement>
+                <ui:VisualElement style="flex-grow: 1; width: 90%; height: 5px; margin-top: 5px; margin-right: 5px; margin-bottom: 5px; margin-left: 5px; background-color: rgb(228, 187, 156);" />
+                <ui:VisualElement name="InventoryEntry" style="flex-grow: 0; width: 80px; height: 80px; flex-direction: row;">
+                    <ui:VisualElement name="Item" style="flex-grow: 1;" />
+                    <ui:Label tabindex="-1" text="0" display-tooltip-when-elided="true" name="ItemCount" style="position: absolute; right: -5px; bottom: -5px; background-color: rgb(255, 255, 255); width: 25px; height: 25px; -unity-text-align: middle-center;" />
+                </ui:VisualElement>
+                <ui:VisualElement name="InventoryEntry" style="flex-grow: 0; width: 80px; height: 80px; flex-direction: row;">
+                    <ui:VisualElement name="Item" style="flex-grow: 1;" />
+                    <ui:Label tabindex="-1" text="0" display-tooltip-when-elided="true" name="ItemCount" style="position: absolute; right: -5px; bottom: -5px; background-color: rgb(255, 255, 255); width: 25px; height: 25px; -unity-text-align: middle-center;" />
+                </ui:VisualElement>
+                <ui:VisualElement name="InventoryEntry" style="flex-grow: 0; width: 80px; height: 80px; flex-direction: row;">
+                    <ui:VisualElement name="Item" style="flex-grow: 1;" />
+                    <ui:Label tabindex="-1" text="0" display-tooltip-when-elided="true" name="ItemCount" style="position: absolute; right: -5px; bottom: -5px; background-color: rgb(255, 255, 255); width: 25px; height: 25px; -unity-text-align: middle-center;" />
+                </ui:VisualElement>
+                <ui:VisualElement name="InventoryEntry" style="flex-grow: 0; width: 80px; height: 80px; flex-direction: row;">
+                    <ui:VisualElement name="Item" style="flex-grow: 1;" />
+                    <ui:Label tabindex="-1" text="0" display-tooltip-when-elided="true" name="ItemCount" style="position: absolute; right: -5px; bottom: -5px; background-color: rgb(255, 255, 255); width: 25px; height: 25px; -unity-text-align: middle-center;" />
+                </ui:VisualElement>
+                <ui:VisualElement name="InventoryEntry" style="flex-grow: 0; width: 80px; height: 80px; flex-direction: row;">
+                    <ui:VisualElement name="Item" style="flex-grow: 1;" />
+                    <ui:Label tabindex="-1" text="0" display-tooltip-when-elided="true" name="ItemCount" style="position: absolute; right: -5px; bottom: -5px; background-color: rgb(255, 255, 255); width: 25px; height: 25px; -unity-text-align: middle-center;" />
+                </ui:VisualElement>
+                <ui:VisualElement name="InventoryEntry" style="flex-grow: 0; width: 80px; height: 80px; flex-direction: row;">
+                    <ui:VisualElement name="Item" style="flex-grow: 1;" />
+                    <ui:Label tabindex="-1" text="0" display-tooltip-when-elided="true" name="ItemCount" style="position: absolute; right: -5px; bottom: -5px; background-color: rgb(255, 255, 255); width: 25px; height: 25px; -unity-text-align: middle-center;" />
+                </ui:VisualElement>
+                <ui:VisualElement name="InventoryEntry" style="flex-grow: 0; width: 80px; height: 80px; flex-direction: row;">
+                    <ui:VisualElement name="Item" style="flex-grow: 1;" />
+                    <ui:Label tabindex="-1" text="0" display-tooltip-when-elided="true" name="ItemCount" style="position: absolute; right: -5px; bottom: -5px; background-color: rgb(255, 255, 255); width: 25px; height: 25px; -unity-text-align: middle-center;" />
+                </ui:VisualElement>
+                <ui:VisualElement name="InventoryEntry" style="flex-grow: 0; width: 80px; height: 80px; flex-direction: row;">
+                    <ui:VisualElement name="Item" style="flex-grow: 1;" />
+                    <ui:Label tabindex="-1" text="0" display-tooltip-when-elided="true" name="ItemCount" style="position: absolute; right: -5px; bottom: -5px; background-color: rgb(255, 255, 255); width: 25px; height: 25px; -unity-text-align: middle-center;" />
+                </ui:VisualElement>
+                <ui:VisualElement name="InventoryEntry" style="flex-grow: 0; width: 80px; height: 80px; flex-direction: row;">
+                    <ui:VisualElement name="Item" style="flex-grow: 1;" />
+                    <ui:Label tabindex="-1" text="0" display-tooltip-when-elided="true" name="ItemCount" style="position: absolute; right: -5px; bottom: -5px; background-color: rgb(255, 255, 255); width: 25px; height: 25px; -unity-text-align: middle-center;" />
+                </ui:VisualElement>
+                <ui:VisualElement name="InventoryEntry" style="flex-grow: 0; width: 80px; height: 80px; flex-direction: row;">
+                    <ui:VisualElement name="Item" style="flex-grow: 1;" />
+                    <ui:Label tabindex="-1" text="0" display-tooltip-when-elided="true" name="ItemCount" style="position: absolute; right: -5px; bottom: -5px; background-color: rgb(255, 255, 255); width: 25px; height: 25px; -unity-text-align: middle-center;" />
+                </ui:VisualElement>
+                <ui:VisualElement name="InventoryEntry" style="flex-grow: 0; width: 80px; height: 80px; flex-direction: row;">
+                    <ui:VisualElement name="Item" style="flex-grow: 1;" />
+                    <ui:Label tabindex="-1" text="0" display-tooltip-when-elided="true" name="ItemCount" style="position: absolute; right: -5px; bottom: -5px; background-color: rgb(255, 255, 255); width: 25px; height: 25px; -unity-text-align: middle-center;" />
+                </ui:VisualElement>
+                <ui:VisualElement name="InventoryEntry" style="flex-grow: 0; width: 80px; height: 80px; flex-direction: row;">
+                    <ui:VisualElement name="Item" style="flex-grow: 1;" />
+                    <ui:Label tabindex="-1" text="0" display-tooltip-when-elided="true" name="ItemCount" style="position: absolute; right: -5px; bottom: -5px; background-color: rgb(255, 255, 255); width: 25px; height: 25px; -unity-text-align: middle-center;" />
+                </ui:VisualElement>
+                <ui:VisualElement name="InventoryEntry" style="flex-grow: 0; width: 80px; height: 80px; flex-direction: row;">
+                    <ui:VisualElement name="Item" style="flex-grow: 1;" />
+                    <ui:Label tabindex="-1" text="0" display-tooltip-when-elided="true" name="ItemCount" style="position: absolute; right: -5px; bottom: -5px; background-color: rgb(255, 255, 255); width: 25px; height: 25px; -unity-text-align: middle-center;" />
+                </ui:VisualElement>
+                <ui:VisualElement name="InventoryEntry" style="flex-grow: 0; width: 80px; height: 80px; flex-direction: row;">
+                    <ui:VisualElement name="Item" style="flex-grow: 1;" />
+                    <ui:Label tabindex="-1" text="0" display-tooltip-when-elided="true" name="ItemCount" style="position: absolute; right: -5px; bottom: -5px; background-color: rgb(255, 255, 255); width: 25px; height: 25px; -unity-text-align: middle-center;" />
+                </ui:VisualElement>
+                <ui:VisualElement name="InventoryEntry" style="flex-grow: 0; width: 80px; height: 80px; flex-direction: row;">
+                    <ui:VisualElement name="Item" style="flex-grow: 1;" />
+                    <ui:Label tabindex="-1" text="0" display-tooltip-when-elided="true" name="ItemCount" style="position: absolute; right: -5px; bottom: -5px; background-color: rgb(255, 255, 255); width: 25px; height: 25px; -unity-text-align: middle-center;" />
+                </ui:VisualElement>
+                <ui:VisualElement name="InventoryEntry" style="flex-grow: 0; width: 80px; height: 80px; flex-direction: row;">
+                    <ui:VisualElement name="Item" style="flex-grow: 1;" />
+                    <ui:Label tabindex="-1" text="0" display-tooltip-when-elided="true" name="ItemCount" style="position: absolute; right: -5px; bottom: -5px; background-color: rgb(255, 255, 255); width: 25px; height: 25px; -unity-text-align: middle-center;" />
+                </ui:VisualElement>
+                <ui:VisualElement name="InventoryEntry" style="flex-grow: 0; width: 80px; height: 80px; flex-direction: row;">
+                    <ui:VisualElement name="Item" style="flex-grow: 1;" />
+                    <ui:Label tabindex="-1" text="0" display-tooltip-when-elided="true" name="ItemCount" style="position: absolute; right: -5px; bottom: -5px; background-color: rgb(255, 255, 255); width: 25px; height: 25px; -unity-text-align: middle-center;" />
+                </ui:VisualElement>
+                <ui:VisualElement name="InventoryEntry" style="flex-grow: 0; width: 80px; height: 80px; flex-direction: row;">
+                    <ui:VisualElement name="Item" style="flex-grow: 1;" />
+                    <ui:Label tabindex="-1" text="0" display-tooltip-when-elided="true" name="ItemCount" style="position: absolute; right: -5px; bottom: -5px; background-color: rgb(255, 255, 255); width: 25px; height: 25px; -unity-text-align: middle-center;" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
 </ui:UXML>

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Template2DCommon;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UIElements;
 using Cursor = UnityEngine.Cursor;
@@ -38,8 +39,18 @@ namespace HappyHarvest
 
         protected UIDocument m_Document;
         
-        protected List<VisualElement> m_InventorySlots;
-        protected List<Label> m_ItemCountLabels;
+        // Inventory System
+        protected List<VisualElement> m_InventorySlots;     // �ֱ����x�s��
+        protected List<Label> m_ItemCountLabels;            // �ֱ��檫�~�ƶq
+        protected List<VisualElement> m_FullInventorySlots; // �j�I�]�x�s��
+        protected List<Label> m_FullItemCountLabels;        // �j�I�]���~�ƶq
+        protected VisualElement m_InventoryPopup; // �j�I�]����
+        public static bool IsInventoryOpen => s_Instance.m_InventoryPopup.style.display == DisplayStyle.Flex;
+
+        VisualElement m_GhostIcon;      // ���H�ƹ����ʪ��z���ϥ�
+        bool m_IsDragging;              // �O�_���b�즲��
+        int m_DragSourceIndex = -1;     // �ӷ���l�� Index
+        int m_HoveredSlotIndex = -1;    // �ثe�ƹ����쪺��lIndex
 
         protected Label m_CointCounter;
 
@@ -67,14 +78,21 @@ namespace HappyHarvest
         private Label m_RainLabel;
         private Label m_ThunderLabel;
 
+        
+
         void Awake()
         {
             s_Instance = this;
 
             m_Document = GetComponent<UIDocument>();
 
-            m_InventorySlots = m_Document.rootVisualElement.Query<VisualElement>("InventoryEntry").ToList();
-            m_ItemCountLabels = m_Document.rootVisualElement.Query<Label>("ItemCount").ToList();
+            m_InventoryPopup = m_Document.rootVisualElement.Q<VisualElement>("InventoryPopup");
+            m_InventoryPopup.style.display = DisplayStyle.None;
+
+            m_InventorySlots = m_Document.rootVisualElement.Q<VisualElement>("Inventory").Query<VisualElement>("InventoryEntry").ToList();
+            m_ItemCountLabels = m_Document.rootVisualElement.Q<VisualElement>("Inventory").Query<Label>("ItemCount").ToList();
+            m_FullInventorySlots = m_Document.rootVisualElement.Q<VisualElement>("InventoryPopup").Query<VisualElement>("InventoryEntry").ToList();
+            m_FullItemCountLabels = m_Document.rootVisualElement.Q<VisualElement>("InventoryPopup").Query<Label>("ItemCount").ToList();
 
             for (int i = 0; i < m_InventorySlots.Count; ++i)
             {
@@ -85,8 +103,47 @@ namespace HappyHarvest
                 }));
             }
 
-            Debug.Assert(m_InventorySlots.Count == InventorySystem.InventorySize,
+            Debug.Assert(m_InventorySlots.Count == InventorySystem.HotBarSize,
                 "Not enough items slots in the UI for inventory");
+
+            Debug.Assert(m_FullInventorySlots.Count == InventorySystem.InventorySize,
+                "Not enough items slots in the UI for full inventory");
+
+            m_GhostIcon = new VisualElement();
+            m_GhostIcon.style.position = Position.Absolute;
+            m_GhostIcon.style.width = 80;  // �]�w�ϥܤj�p�A��ĳ�P��l�j�p�@�P
+            m_GhostIcon.style.height = 80;
+            m_GhostIcon.style.visibility = Visibility.Hidden;
+            m_GhostIcon.pickingMode = PickingMode.Ignore; // ����I���ƹ��g�u��z���A�o�ˤ~�఻���쩳�U����l
+            m_Document.rootVisualElement.Add(m_GhostIcon);
+
+            // ���U�b root �W�H�T�O�즲���l�~�]�఻�����ʩΩ�}
+            m_Document.rootVisualElement.RegisterCallback<PointerMoveEvent>(OnPointerMove);
+            m_Document.rootVisualElement.RegisterCallback<PointerUpEvent>(OnPointerUp);
+
+            // --- �s�W�G���C�Ӥj�I�]��l���U�ƥ� ---
+            for (int i = 0; i < m_FullInventorySlots.Count; ++i)
+            {
+                int index = i; // Closure capture
+                var slot = m_FullInventorySlots[i];
+
+                // 1. �ƹ��i�J�G���� Index
+                slot.RegisterCallback<PointerEnterEvent>(evt =>
+                {
+                    m_HoveredSlotIndex = index;
+                });
+
+                // 2. �ƹ����}�G�M�� Index
+                slot.RegisterCallback<PointerLeaveEvent>(evt =>
+                {
+                    // �u�������}���u���O�ثe��������l�~�M�� (�קK�ֳt���ʮɪ� race condition)
+                    if (m_HoveredSlotIndex == index)
+                        m_HoveredSlotIndex = -1;
+                });
+
+                // 3. �ƹ��I���G�}�l�즲
+                slot.RegisterCallback<PointerDownEvent>(evt => OnSlotDown(evt, index));
+            }
 
             m_CointCounter = m_Document.rootVisualElement.Q<Label>("CoinAmount");
 
@@ -130,6 +187,8 @@ namespace HappyHarvest
             m_SunLabel.AddManipulator(new Clickable(() => { GameManager.Instance.WeatherSystem?.ChangeWeather(WeatherSystem.WeatherType.Sun); }));
             m_RainLabel.AddManipulator(new Clickable(() => { GameManager.Instance.WeatherSystem?.ChangeWeather(WeatherSystem.WeatherType.Rain); }));
             m_ThunderLabel.AddManipulator(new Clickable(() => { GameManager.Instance.WeatherSystem?.ChangeWeather(WeatherSystem.WeatherType.Thunder); }));
+
+            
         }
         
         
@@ -151,6 +210,7 @@ namespace HappyHarvest
         public static void UpdateInventory(InventorySystem system)
         {
             s_Instance.UpdateInventory_Internal(system);
+            s_Instance.UpdateFullInventory_Internal(system);
         }
 
         public static void UpdateCoins(int amount)
@@ -357,6 +417,8 @@ namespace HappyHarvest
         {
             for (int i = 0; i < system.Entries.Length; ++i)
             {
+                if (i >= InventorySystem.HotBarSize) break;
+
                 var item = system.Entries[i].Item;
                 m_InventorySlots[i][0].style.backgroundImage =
                     item == null ? new StyleBackground((Sprite)null) : new StyleBackground(item.ItemSprite);
@@ -399,6 +461,117 @@ namespace HappyHarvest
         public static void CloseFishingGame()
         {
             s_Instance.m_FishingGameUI.Close();
+        public static void OpenInventory(InventorySystem system)
+        {
+            s_Instance.OpenInventory_Internal(system);
+        }
+
+        public static void CloseInventory()
+        {
+            s_Instance.CloseInventory_Internal();
+        }
+
+        void OpenInventory_Internal(InventorySystem system)
+        {
+            if (m_InventoryPopup.style.display == DisplayStyle.Flex) return;
+
+            m_InventoryPopup.style.display = DisplayStyle.Flex;
+            GameManager.Instance.Pause(); // �Ȱ��C��
+            SoundManager.Instance.PlayUISound();
+
+            // ���sø�s��Ӥj�I�]
+            UpdateFullInventory_Internal(system);
+        }
+
+        void CloseInventory_Internal()
+        {
+            m_InventoryPopup.style.display = DisplayStyle.None;
+            GameManager.Instance.Resume(); // ��_�C��
+        }
+
+        void UpdateFullInventory_Internal(InventorySystem system)
+        {
+            for (int i = 0; i < system.Entries.Length; ++i)
+            {
+                var item = system.Entries[i].Item;
+                m_FullInventorySlots[i][0].style.backgroundImage =
+                    item == null ? new StyleBackground((Sprite)null) : new StyleBackground(item.ItemSprite);
+
+                if (item == null || system.Entries[i].StackSize < 2)
+                {
+                    m_FullItemCountLabels[i].style.visibility = Visibility.Hidden;
+                }
+                else
+                {
+                    m_FullItemCountLabels[i].style.visibility = Visibility.Visible;
+                    m_FullItemCountLabels[i].text = system.Entries[i].StackSize.ToString();
+                }
+            }
+        }
+
+        // ���b��l���U�ƹ� (�}�l�즲)
+        private void OnSlotDown(PointerDownEvent evt, int index)
+        {
+            // �T�O�O����A�B�Ӯ�l�����~
+            var inventory = GameManager.Instance.Player.Inventory;
+            if (evt.button != 0 || inventory.Entries[index].Item == null) return;
+
+            m_IsDragging = true;
+            m_DragSourceIndex = index;
+
+            // �]�w Ghost Icon ���Ϯ�
+            m_GhostIcon.style.backgroundImage = new StyleBackground(inventory.Entries[index].Item.ItemSprite);
+            m_GhostIcon.style.visibility = Visibility.Visible;
+
+            // �]�w��l��m (�N�ƹ��y���ഫ�� UI �y��)
+            UpdateGhostPosition(evt.position);
+
+            // ���� Pointer�A�o�˧Y�Ϸƹ����X�����APointerUp �]��Q������ (����d��)
+            m_Document.rootVisualElement.CapturePointer(evt.pointerId);
+        }
+
+        // ���ƹ����� (���� Ghost Icon)
+        private void OnPointerMove(PointerMoveEvent evt)
+        {
+            if (!m_IsDragging) return;
+            UpdateGhostPosition(evt.position);
+        }
+
+        // ���ƹ���} (�����즲�å洫)
+        private void OnPointerUp(PointerUpEvent evt)
+        {
+            if (!m_IsDragging) return;
+
+            // ���� Pointer
+            m_Document.rootVisualElement.ReleasePointer(evt.pointerId);
+
+            // ����洫�޿�
+            // ����G�����즲�즳�Į�l�A�B���O�즲��ۤv���W
+            if (m_HoveredSlotIndex != -1 && m_HoveredSlotIndex != m_DragSourceIndex)
+            {
+                GameManager.Instance.Player.Inventory.SwapItem(m_DragSourceIndex, m_HoveredSlotIndex);
+
+                // �洫������A���s��z UI (UpdateInventory �|�I�s UpdateFullInventory_Internal)
+                // SwapItems �����w�g�I�s�F UpdateInventory�A�ҥH�o�̤��ݭn���ƩI�s
+            }
+
+            // ���m���A
+            m_IsDragging = false;
+            m_DragSourceIndex = -1;
+            m_GhostIcon.style.visibility = Visibility.Hidden;
+            m_GhostIcon.style.backgroundImage = null;
+        }
+
+        // ���U�禡�G��s Ghost Icon ��m
+        private void UpdateGhostPosition(Vector2 screenPosition)
+        {
+            // �`�N�GUI Toolkit ���y�Шt���I�b���W��
+            // �ڭ����ϥܤ����I����ƹ�
+            float halfWidth = m_GhostIcon.layout.width / 2;
+            float halfHeight = m_GhostIcon.layout.height / 2;
+
+            m_GhostIcon.style.left = screenPosition.x - halfWidth;
+            m_GhostIcon.style.top = screenPosition.y - halfHeight;
         }
     }
 }
