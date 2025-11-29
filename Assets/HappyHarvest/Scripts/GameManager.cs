@@ -16,22 +16,22 @@ namespace HappyHarvest
     public class GameManager : MonoBehaviour
     {
         private static GameManager s_Instance;
-        
-        
+
+
 #if UNITY_EDITOR
         //As our manager run first, it will also be destroyed first when the app will be exiting, which lead to s_Instance
         //to become null and so will trigger another instantiate in edit mode (as we dynamically instantiate the Manager)
         //so this is set to true when destroyed, so we do not reinstantiate a new one
         private static bool s_IsQuitting = false;
 #endif
-        public static GameManager Instance 
+        public static GameManager Instance
         {
             get
             {
 #if UNITY_EDITOR
                 if (!Application.isPlaying || s_IsQuitting)
                     return null;
-                
+
                 if (s_Instance == null)
                 {
                     //in editor, we can start any scene to test, so we are not sure the game manager will have been
@@ -43,6 +43,7 @@ namespace HappyHarvest
                 return s_Instance;
             }
         }
+        public Gambling GamblingSystem { get; set; }
         public FishingSystem FishingSystem { get; set; }
         public TerrainManager Terrain { get; set; }
         public PlayerController Player { get; set; }
@@ -50,47 +51,47 @@ namespace HappyHarvest
         public WeatherSystem WeatherSystem { get; set; }
         public CinemachineVirtualCamera MainCamera { get; set; }
         public Tilemap WalkSurfaceTilemap { get; set; }
-        
+
         public SceneData LoadedSceneData { get; set; }
-        
+
         // Will return the ratio of time for the current day between 0 (00:00) and 1 (23:59).
         public float CurrentDayRatio => m_CurrentTimeOfTheDay / DayDurationInSeconds;
 
-        [Header("Market")] 
+        [Header("Market")]
         public Item[] MarketEntries;
-        
+
         [Header("Time settings")]
-        [Min(1.0f)] 
+        [Min(1.0f)]
         public float DayDurationInSeconds;
         public float StartingTime = 0.0f;
 
-        [Header("Data")] 
+        [Header("Data")]
         public ItemDatabase ItemDatabase;
         public CropDatabase CropDatabase;
 
         public Storage Storage;
 
         private bool m_IsTicking;
-        
+
         private List<DayEventHandler> m_EventHandlers = new();
         private List<SpawnPoint> m_ActiveTransitions = new List<SpawnPoint>();
-        
+
         private float m_CurrentTimeOfTheDay;
 
         private void Awake()
         {
             s_Instance = this;
             DontDestroyOnLoad(gameObject);
-            
+
             m_IsTicking = true;
-            
+
             ItemDatabase.Init();
             CropDatabase.Init();
-            
+
             Storage = new Storage();
-            
+
             m_CurrentTimeOfTheDay = StartingTime;
-            
+
             //we need to ensure that we don't have a day length at 0, otherwise we will get stuck into infinite loop in update
             //(and a day with 0 length makes no sense)
             if (DayDurationInSeconds <= 0.0f)
@@ -103,7 +104,7 @@ namespace HappyHarvest
         private void Start()
         {
             m_CurrentTimeOfTheDay = StartingTime;
-            
+
             UIHandler.SceneLoaded();
         }
 
@@ -130,7 +131,7 @@ namespace HappyHarvest
                     {
                         bool prev = evt.IsInRange(previousRatio);
                         bool current = evt.IsInRange(CurrentDayRatio);
-                    
+
                         if (prev && !current)
                         {
                             evt.OffEvent.Invoke();
@@ -141,8 +142,8 @@ namespace HappyHarvest
                         }
                     }
                 }
-                
-                if(DayCycleHandler != null)
+
+                if (DayCycleHandler != null)
                     DayCycleHandler.Tick();
             }
         }
@@ -166,7 +167,7 @@ namespace HappyHarvest
                 Instantiate(Resources.Load<PlayerController>("Character"));
                 spawn.SpawnHere();
             }
-            
+
             m_ActiveTransitions.Add(spawn);
         }
 
@@ -185,7 +186,7 @@ namespace HappyHarvest
                 asyncop.completed += operation =>
                 {
                     m_IsTicking = true;
-                    
+
                     foreach (var active in m_ActiveTransitions)
                     {
                         if (active.SpawnIndex == targetSpawn)
@@ -194,7 +195,7 @@ namespace HappyHarvest
                             SaveSystem.LoadSceneData();
                         }
                     }
-                    
+
                     UIHandler.SceneLoaded();
                     UIHandler.FadeFromBlack(() =>
                     {
@@ -203,9 +204,9 @@ namespace HappyHarvest
                 };
             });
 
-            
+
         }
-        
+
         /// <summary>
         /// Will return the current time as a string in format of "xx:xx" 
         /// </summary>
@@ -228,7 +229,7 @@ namespace HappyHarvest
             return $"{hour}:{minute:00}";
         }
 
-        
+
         public static int GetHourFromRatio(float ratio)
         {
             var time = ratio * 24.0f;
@@ -244,7 +245,7 @@ namespace HappyHarvest
 
             return minute;
         }
-        
+
         public static void RegisterEventHandler(DayEventHandler handler)
         {
             foreach (var evt in handler.Events)
@@ -258,7 +259,7 @@ namespace HappyHarvest
                     evt.OffEvent.Invoke();
                 }
             }
-            
+
             Instance.m_EventHandlers.Add(handler);
         }
 
