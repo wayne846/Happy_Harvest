@@ -283,62 +283,62 @@ namespace HappyHarvest
         public string ItemID;
     }
 
-#if UNITY_EDITOR
+//#if UNITY_EDITOR
 
-    [CustomPropertyDrawer(typeof(InventorySystem))]
-    public class InventoryDrawer : PropertyDrawer
-    {
-        public override VisualElement CreatePropertyGUI(SerializedProperty property)
-        {
-            var container = new VisualElement();
+//    [CustomPropertyDrawer(typeof(InventorySystem))]
+//    public class InventoryDrawer : PropertyDrawer
+//    {
+//        public override VisualElement CreatePropertyGUI(SerializedProperty property)
+//        {
+//            var container = new VisualElement();
 
-            container.Add(new Label("Starting Inventory"));
+//            container.Add(new Label("Starting Inventory"));
 
-            ListView list = new ListView();
-            list.showBoundCollectionSize = false;
-            list.bindingPath = nameof(InventorySystem.Entries);
-            list.virtualizationMethod = CollectionVirtualizationMethod.DynamicHeight;
-            list.style.flexGrow = 1;
-            list.reorderable = true;
-            list.showAlternatingRowBackgrounds = AlternatingRowBackground.ContentOnly;
-            list.showBorder = true;
+//            ListView list = new ListView();
+//            list.showBoundCollectionSize = false;
+//            list.bindingPath = nameof(InventorySystem.Entries);
+//            list.virtualizationMethod = CollectionVirtualizationMethod.DynamicHeight;
+//            list.style.flexGrow = 1;
+//            list.reorderable = true;
+//            list.showAlternatingRowBackgrounds = AlternatingRowBackground.ContentOnly;
+//            list.showBorder = true;
 
-            container.Add(list);
+//            container.Add(list);
 
-            return container;
-        }
-    }
+//            return container;
+//        }
+//    }
 
-    [CustomPropertyDrawer(typeof(InventorySystem.InventoryEntry))]
-    public class InventoryEntryDrawer : PropertyDrawer
-    {
-        public override VisualElement CreatePropertyGUI(SerializedProperty property)
-        {
-            var container = new VisualElement();
+//    [CustomPropertyDrawer(typeof(InventorySystem.InventoryEntry))]
+//    public class InventoryEntryDrawer : PropertyDrawer
+//    {
+//        public override VisualElement CreatePropertyGUI(SerializedProperty property)
+//        {
+//            var container = new VisualElement();
 
-            var itemProperty = property.FindPropertyRelative(nameof(InventorySystem.InventoryEntry.Item));
-            var stackProperty = property.FindPropertyRelative(nameof(InventorySystem.InventoryEntry.StackSize));
+//            var itemProperty = property.FindPropertyRelative(nameof(InventorySystem.InventoryEntry.Item));
+//            var stackProperty = property.FindPropertyRelative(nameof(InventorySystem.InventoryEntry.StackSize));
 
-            container.style.flexDirection = FlexDirection.Row;
+//            container.style.flexDirection = FlexDirection.Row;
 
-            var itemLabel = new Label($"Item : ");
-            itemLabel.style.width = Length.Percent(10);
-            var itemField = new PropertyField(itemProperty, "");
-            itemField.style.width = Length.Percent(40);
-            var stackSizeLabel = new Label("Count : ");
-            stackSizeLabel.style.width = Length.Percent(10);
-            var stackField = new PropertyField(stackProperty, "");
-            stackField.style.width = Length.Percent(40);
+//            var itemLabel = new Label($"Item : ");
+//            itemLabel.style.width = Length.Percent(10);
+//            var itemField = new PropertyField(itemProperty, "");
+//            itemField.style.width = Length.Percent(40);
+//            var stackSizeLabel = new Label("Count : ");
+//            stackSizeLabel.style.width = Length.Percent(10);
+//            var stackField = new PropertyField(stackProperty, "");
+//            stackField.style.width = Length.Percent(40);
 
-            container.Add(itemLabel);
-            container.Add(itemField);
-            container.Add(stackSizeLabel);
-            container.Add(stackField);
+//            container.Add(itemLabel);
+//            container.Add(itemField);
+//            container.Add(stackSizeLabel);
+//            container.Add(stackField);
 
-            return container;
-        }
-    }
+//            return container;
+//        }
+//    }
 
-#endif
+//#endif
 
 }

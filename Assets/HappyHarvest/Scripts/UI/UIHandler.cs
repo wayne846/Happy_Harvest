@@ -35,8 +35,13 @@ namespace HappyHarvest
         
         protected UIDocument m_Document;
         
-        protected List<VisualElement> m_InventorySlots;
-        protected List<Label> m_ItemCountLabels;
+        // Inventory System
+        protected List<VisualElement> m_InventorySlots;     // 快捷欄儲存格
+        protected List<Label> m_ItemCountLabels;            // 快捷欄物品數量
+        protected List<VisualElement> m_FullInventorySlots; // 大背包儲存格
+        protected List<Label> m_FullItemCountLabels;        // 大背包物品數量
+        protected VisualElement m_InventoryPopup; // 大背包介面
+        public static bool IsInventoryOpen => s_Instance.m_InventoryPopup.style.display == DisplayStyle.Flex;
 
         protected Label m_CointCounter;
 
@@ -63,8 +68,7 @@ namespace HappyHarvest
         private Label m_RainLabel;
         private Label m_ThunderLabel;
 
-        protected VisualElement m_InventoryPopup; // 大背包介面
-        public static bool IsInventoryOpen => s_Instance.m_InventoryPopup.visible;
+        
 
         void Awake()
         {
@@ -72,8 +76,13 @@ namespace HappyHarvest
 
             m_Document = GetComponent<UIDocument>();
 
-            m_InventorySlots = m_Document.rootVisualElement.Query<VisualElement>("InventoryEntry").ToList();
-            m_ItemCountLabels = m_Document.rootVisualElement.Query<Label>("ItemCount").ToList();
+            m_InventoryPopup = m_Document.rootVisualElement.Q<VisualElement>("InventoryPopup");
+            m_InventoryPopup.style.display = DisplayStyle.None;
+
+            m_InventorySlots = m_Document.rootVisualElement.Q<VisualElement>("Inventory").Query<VisualElement>("InventoryEntry").ToList();
+            m_ItemCountLabels = m_Document.rootVisualElement.Q<VisualElement>("Inventory").Query<Label>("ItemCount").ToList();
+            m_FullInventorySlots = m_Document.rootVisualElement.Q<VisualElement>("InventoryPopup").Query<VisualElement>("InventoryEntry").ToList();
+            m_FullItemCountLabels = m_Document.rootVisualElement.Q<VisualElement>("InventoryPopup").Query<Label>("ItemCount").ToList();
 
             for (int i = 0; i < m_InventorySlots.Count; ++i)
             {
@@ -84,8 +93,11 @@ namespace HappyHarvest
                 }));
             }
 
-            Debug.Assert(m_InventorySlots.Count == InventorySystem.InventorySize,
+            Debug.Assert(m_InventorySlots.Count == InventorySystem.HotBarSize,
                 "Not enough items slots in the UI for inventory");
+
+            Debug.Assert(m_FullInventorySlots.Count == InventorySystem.InventorySize,
+                "Not enough items slots in the UI for full inventory");
 
             m_CointCounter = m_Document.rootVisualElement.Q<Label>("CoinAmount");
 
@@ -128,8 +140,7 @@ namespace HappyHarvest
             m_RainLabel.AddManipulator(new Clickable(() => { GameManager.Instance.WeatherSystem?.ChangeWeather(WeatherSystem.WeatherType.Rain); }));
             m_ThunderLabel.AddManipulator(new Clickable(() => { GameManager.Instance.WeatherSystem?.ChangeWeather(WeatherSystem.WeatherType.Thunder); }));
 
-            m_InventoryPopup = m_Document.rootVisualElement.Q<VisualElement>("InventoryPopup");
-            m_InventoryPopup.visible = false;
+            
         }
         
         
@@ -357,6 +368,8 @@ namespace HappyHarvest
         {
             for (int i = 0; i < system.Entries.Length; ++i)
             {
+                if (i >= InventorySystem.HotBarSize) break;
+
                 var item = system.Entries[i].Item;
                 m_InventorySlots[i][0].style.backgroundImage =
                     item == null ? new StyleBackground((Sprite)null) : new StyleBackground(item.ItemSprite);
@@ -388,9 +401,9 @@ namespace HappyHarvest
             s_Instance.m_FishingSpotUI.Open();
         }
 
-        public static void OpenInventory()
+        public static void OpenInventory(InventorySystem system)
         {
-            s_Instance.OpenInventory_Internal();
+            s_Instance.OpenInventory_Internal(system);
         }
 
         public static void CloseInventory()
@@ -398,27 +411,47 @@ namespace HappyHarvest
             s_Instance.CloseInventory_Internal();
         }
 
-        void OpenInventory_Internal()
+        void OpenInventory_Internal(InventorySystem system)
         {
-            if (m_InventoryPopup.visible) return;
+            if (m_InventoryPopup.style.display == DisplayStyle.Flex) return;
 
-            m_InventoryPopup.visible = true;
+            m_InventoryPopup.style.display = DisplayStyle.Flex;
             GameManager.Instance.Pause(); // 暫停遊戲
             SoundManager.Instance.PlayUISound();
 
             // 重新繪製整個大背包
-            RefreshFullInventoryUI();
+            UpdateFullInventory_Internal(system);
         }
 
         void CloseInventory_Internal()
         {
-            m_InventoryPopup.visible = false;
+            m_InventoryPopup.style.display = DisplayStyle.None;
             GameManager.Instance.Resume(); // 恢復遊戲
         }
 
-        void RefreshFullInventoryUI()
+        void UpdateFullInventory_Internal(InventorySystem system)
         {
+            Debug.Log(system.Entries.Length);
+            for (int i = 0; i < system.Entries.Length; ++i)
+            {
+                var item = system.Entries[i].Item;
+                m_FullInventorySlots[i][0].style.backgroundImage =
+                    item == null ? new StyleBackground((Sprite)null) : new StyleBackground(item.ItemSprite);
 
+                if (item == null)
+                {
+                    Debug.Log(i + "Null");
+                }
+                if (item == null || system.Entries[i].StackSize < 2)
+                {
+                    m_FullItemCountLabels[i].style.visibility = Visibility.Hidden;
+                }
+                else
+                {
+                    m_FullItemCountLabels[i].style.visibility = Visibility.Visible;
+                    m_FullItemCountLabels[i].text = system.Entries[i].StackSize.ToString();
+                }
+            }
         }
     }
 }

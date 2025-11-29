@@ -466,7 +466,7 @@ namespace HappyHarvest
             }
             else
             {
-                UIHandler.OpenInventory();
+                UIHandler.OpenInventory(m_Inventory);
             }
         }
     }
