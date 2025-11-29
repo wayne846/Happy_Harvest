@@ -219,7 +219,7 @@ namespace HappyHarvest
             UIHandler.UpdateInventory(this);
         }
 
-        public void SwapEntries(int indexA, int indexB)
+        public void SwapItem(int indexA, int indexB)
         {
             if (indexA == indexB) return;
             if (indexA < 0 || indexA >= InventorySize || indexB < 0 || indexB >= InventorySize) return;

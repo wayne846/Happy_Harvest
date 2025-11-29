@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Template2DCommon;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UIElements;
 using Cursor = UnityEngine.Cursor;
@@ -42,6 +43,11 @@ namespace HappyHarvest
         protected List<Label> m_FullItemCountLabels;        // 大背包物品數量
         protected VisualElement m_InventoryPopup; // 大背包介面
         public static bool IsInventoryOpen => s_Instance.m_InventoryPopup.style.display == DisplayStyle.Flex;
+
+        VisualElement m_GhostIcon;      // 跟隨滑鼠移動的透明圖示
+        bool m_IsDragging;              // 是否正在拖曳中
+        int m_DragSourceIndex = -1;     // 來源格子的 Index
+        int m_HoveredSlotIndex = -1;    // 目前滑鼠指到的格子Index
 
         protected Label m_CointCounter;
 
@@ -98,6 +104,42 @@ namespace HappyHarvest
 
             Debug.Assert(m_FullInventorySlots.Count == InventorySystem.InventorySize,
                 "Not enough items slots in the UI for full inventory");
+
+            m_GhostIcon = new VisualElement();
+            m_GhostIcon.style.position = Position.Absolute;
+            m_GhostIcon.style.width = 80;  // 設定圖示大小，建議與格子大小一致
+            m_GhostIcon.style.height = 80;
+            m_GhostIcon.style.visibility = Visibility.Hidden;
+            m_GhostIcon.pickingMode = PickingMode.Ignore; // 關鍵！讓滑鼠射線穿透它，這樣才能偵測到底下的格子
+            m_Document.rootVisualElement.Add(m_GhostIcon);
+
+            // 註冊在 root 上以確保拖曳到格子外也能偵測移動或放開
+            m_Document.rootVisualElement.RegisterCallback<PointerMoveEvent>(OnPointerMove);
+            m_Document.rootVisualElement.RegisterCallback<PointerUpEvent>(OnPointerUp);
+
+            // --- 新增：為每個大背包格子註冊事件 ---
+            for (int i = 0; i < m_FullInventorySlots.Count; ++i)
+            {
+                int index = i; // Closure capture
+                var slot = m_FullInventorySlots[i];
+
+                // 1. 滑鼠進入：紀錄 Index
+                slot.RegisterCallback<PointerEnterEvent>(evt =>
+                {
+                    m_HoveredSlotIndex = index;
+                });
+
+                // 2. 滑鼠離開：清除 Index
+                slot.RegisterCallback<PointerLeaveEvent>(evt =>
+                {
+                    // 只有當離開的真的是目前紀錄的格子才清除 (避免快速移動時的 race condition)
+                    if (m_HoveredSlotIndex == index)
+                        m_HoveredSlotIndex = -1;
+                });
+
+                // 3. 滑鼠點擊：開始拖曳
+                slot.RegisterCallback<PointerDownEvent>(evt => OnSlotDown(evt, index));
+            }
 
             m_CointCounter = m_Document.rootVisualElement.Q<Label>("CoinAmount");
 
@@ -162,6 +204,7 @@ namespace HappyHarvest
         public static void UpdateInventory(InventorySystem system)
         {
             s_Instance.UpdateInventory_Internal(system);
+            s_Instance.UpdateFullInventory_Internal(system);
         }
 
         public static void UpdateCoins(int amount)
@@ -431,17 +474,12 @@ namespace HappyHarvest
 
         void UpdateFullInventory_Internal(InventorySystem system)
         {
-            Debug.Log(system.Entries.Length);
             for (int i = 0; i < system.Entries.Length; ++i)
             {
                 var item = system.Entries[i].Item;
                 m_FullInventorySlots[i][0].style.backgroundImage =
                     item == null ? new StyleBackground((Sprite)null) : new StyleBackground(item.ItemSprite);
 
-                if (item == null)
-                {
-                    Debug.Log(i + "Null");
-                }
                 if (item == null || system.Entries[i].StackSize < 2)
                 {
                     m_FullItemCountLabels[i].style.visibility = Visibility.Hidden;
@@ -452,6 +490,71 @@ namespace HappyHarvest
                     m_FullItemCountLabels[i].text = system.Entries[i].StackSize.ToString();
                 }
             }
+        }
+
+        // 當在格子按下滑鼠 (開始拖曳)
+        private void OnSlotDown(PointerDownEvent evt, int index)
+        {
+            // 確保是左鍵，且該格子有物品
+            var inventory = GameManager.Instance.Player.Inventory;
+            if (evt.button != 0 || inventory.Entries[index].Item == null) return;
+
+            m_IsDragging = true;
+            m_DragSourceIndex = index;
+
+            // 設定 Ghost Icon 的圖案
+            m_GhostIcon.style.backgroundImage = new StyleBackground(inventory.Entries[index].Item.ItemSprite);
+            m_GhostIcon.style.visibility = Visibility.Visible;
+
+            // 設定初始位置 (將滑鼠座標轉換為 UI 座標)
+            UpdateGhostPosition(evt.position);
+
+            // 捕捉 Pointer，這樣即使滑鼠移出視窗，PointerUp 也能被偵測到 (防止卡住)
+            m_Document.rootVisualElement.CapturePointer(evt.pointerId);
+        }
+
+        // 當滑鼠移動 (移動 Ghost Icon)
+        private void OnPointerMove(PointerMoveEvent evt)
+        {
+            if (!m_IsDragging) return;
+            UpdateGhostPosition(evt.position);
+        }
+
+        // 當滑鼠放開 (結束拖曳並交換)
+        private void OnPointerUp(PointerUpEvent evt)
+        {
+            if (!m_IsDragging) return;
+
+            // 釋放 Pointer
+            m_Document.rootVisualElement.ReleasePointer(evt.pointerId);
+
+            // 執行交換邏輯
+            // 條件：必須拖曳到有效格子，且不是拖曳到自己身上
+            if (m_HoveredSlotIndex != -1 && m_HoveredSlotIndex != m_DragSourceIndex)
+            {
+                GameManager.Instance.Player.Inventory.SwapItem(m_DragSourceIndex, m_HoveredSlotIndex);
+
+                // 交換完畢後，重新整理 UI (UpdateInventory 會呼叫 UpdateFullInventory_Internal)
+                // SwapItems 內部已經呼叫了 UpdateInventory，所以這裡不需要重複呼叫
+            }
+
+            // 重置狀態
+            m_IsDragging = false;
+            m_DragSourceIndex = -1;
+            m_GhostIcon.style.visibility = Visibility.Hidden;
+            m_GhostIcon.style.backgroundImage = null;
+        }
+
+        // 輔助函式：更新 Ghost Icon 位置
+        private void UpdateGhostPosition(Vector2 screenPosition)
+        {
+            // 注意：UI Toolkit 的座標系原點在左上角
+            // 我們讓圖示中心點對齊滑鼠
+            float halfWidth = m_GhostIcon.layout.width / 2;
+            float halfHeight = m_GhostIcon.layout.height / 2;
+
+            m_GhostIcon.style.left = screenPosition.x - halfWidth;
+            m_GhostIcon.style.top = screenPosition.y - halfHeight;
         }
     }
 }
