@@ -168,8 +168,6 @@ namespace HappyHarvest
 
             m_FishingSpotUI = new FishingSpotUI(m_Document.rootVisualElement.Q<VisualElement>("FishingSpotPopup"));
 
-            m_FishingGameUI = new FishingGameUI(Instantiate(FishingGameUIPrefab));
-
             m_Blocker = m_Document.rootVisualElement.Q<VisualElement>("Blocker");
             
             m_Blocker.style.opacity = 1.0f;
@@ -190,8 +188,13 @@ namespace HappyHarvest
 
             
         }
-        
-        
+
+        void Start()
+        {
+            m_FishingGameUI = new FishingGameUI(Instantiate(FishingGameUIPrefab), GameManager.Instance.FishingSystem);
+        }
+
+
         void Update()
         {
             m_TimerLabel.text = GameManager.Instance.CurrentTimeAsString();
@@ -450,18 +453,6 @@ namespace HappyHarvest
             s_Instance.m_FishingSpotUI.Open();
         }
 
-        public static void UpdateFishingGameUI(float reelPosition)
-        {
-            s_Instance.m_FishingGameUI.UpdateUI(reelPosition);
-        }
-        public static void OpenFishingGame()
-        {
-            s_Instance.m_FishingGameUI.Open();
-        }
-        public static void CloseFishingGame()
-        {
-            s_Instance.m_FishingGameUI.Close();
-        }
         public static void OpenInventory(InventorySystem system)
         {
             s_Instance.OpenInventory_Internal(system);

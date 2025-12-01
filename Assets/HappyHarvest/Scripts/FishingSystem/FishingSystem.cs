@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -11,10 +12,14 @@ namespace HappyHarvest
         private float ReelDropRate;
 
         private List<Pond> pondList;
-        private float reelPosition;
-        private float fishPosition;
+        
         private float remainTime;
         private float captureProgress;
+        private float reelPosition;
+        private float fishPosition;
+
+        public event Action OpenFishingGameUI;
+        public event Action<float, float, float, float> UpdateUIGameInfo;
 
         private Coroutine fishingGame;
 
@@ -54,7 +59,7 @@ namespace HappyHarvest
 
         private IEnumerator FishingGame()
         {
-            UIHandler.OpenFishingGame();
+            OpenFishingGameUI?.Invoke();
             GameManager.Instance.Player.ToggleFish(true);
             reelPosition = 0f;
             remainTime = 100f;
@@ -65,7 +70,7 @@ namespace HappyHarvest
 
                 remainTime -= Time.deltaTime;
 
-                UIHandler.UpdateFishingGameUI(reelPosition);
+                UpdateUIGameInfo?.Invoke(remainTime, captureProgress, reelPosition, fishPosition);
                 yield return null;
             }
 
