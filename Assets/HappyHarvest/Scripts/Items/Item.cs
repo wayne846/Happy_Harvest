@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace HappyHarvest
 {
@@ -10,6 +10,7 @@ namespace HappyHarvest
         public string UniqueID = "DefaultID";
         
         public string DisplayName;
+        public string DisplayDescription;
         public Sprite ItemSprite;
         public int MaxStackSize = 10;
         public bool Consumable = true;

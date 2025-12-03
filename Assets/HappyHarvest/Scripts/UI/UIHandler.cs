@@ -508,8 +508,8 @@ namespace HappyHarvest
             if (inventory.Entries[index].Item != null)
             {
                 m_ItemIcon.style.backgroundImage = new StyleBackground(inventory.Entries[index].Item.ItemSprite);
-                m_ItemName.text = inventory.Entries[index].Item.DisplayName.ToString();
-                m_ItemDescription.text = inventory.Entries[index].Item.DisplayName + "'s Description.";
+                m_ItemName.text = inventory.Entries[index].Item.DisplayName;
+                m_ItemDescription.text = inventory.Entries[index].Item.DisplayDescription;
             }
         }
 
