@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   UniqueID: carrot
   DisplayName: Carrot
+  DisplayDescription: "\u7D05\u863F\u8514"
   ItemSprite: {fileID: 21300000, guid: f2c50504d7db1cd4d8df1e3bb31d78e2, type: 3}
   MaxStackSize: 10
   Consumable: 1

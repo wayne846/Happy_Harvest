@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   UniqueID: basket
   DisplayName: Harvest Basket
+  DisplayDescription: "\u7528\u65BC\u63A1\u6536\u7684\u7C43\u5B50"
   ItemSprite: {fileID: 21300000, guid: c55833a6eaadae04fa1821f40a52b88c, type: 3}
   MaxStackSize: 1
   Consumable: 0

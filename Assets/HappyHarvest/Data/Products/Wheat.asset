@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   UniqueID: wheat_grain
   DisplayName: Wheat Grain
+  DisplayDescription: "\u5C0F\u9EA5\\n\\n\u725B\u6703\u559C\u6B61\u5B83\u7684"
   ItemSprite: {fileID: 21300000, guid: c491ea482c05c5747a804797b1556048, type: 3}
   MaxStackSize: 10
   Consumable: 1
