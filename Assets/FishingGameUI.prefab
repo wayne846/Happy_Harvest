@@ -526,9 +526,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   CloseButton: {fileID: 2984721649980070889}
   Timer: {fileID: 87316565026823136}
-  ReelBar: {fileID: 1381452904992490187}
   HeightPerUnit: 7
-  ReelDefaultPosition: -350
+  DefaultPosition: -350
+  ReelBar: {fileID: 1381452904992490187}
+  Fish: {fileID: 5466608554648415410}
 --- !u!1 &8746362710355526441
 GameObject:
   m_ObjectHideFlags: 0
@@ -771,6 +772,11 @@ PrefabInstance:
 --- !u!1 &1381452904992490187 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 5076155044390252150, guid: b4c884e881674054a9152273b9070887, type: 3}
+  m_PrefabInstance: {fileID: 6150166699777879229}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &5466608554648415410 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2199027117404733455, guid: b4c884e881674054a9152273b9070887, type: 3}
   m_PrefabInstance: {fileID: 6150166699777879229}
   m_PrefabAsset: {fileID: 0}
 --- !u!224 &8099419031510717159 stripped

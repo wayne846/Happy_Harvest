@@ -47,6 +47,7 @@ namespace HappyHarvest
         {
             fishingGameUIController.UpdateReelBar(reelPosition);
             fishingGameUIController.UpdateTimer(remaingTime);
+            fishingGameUIController.UpdateFish(fishPosition);
         }
     }
 }

@@ -12,13 +12,21 @@ namespace HappyHarvest {
         [SerializeField]
         private TextMeshProUGUI Timer;
 
-        [Header("ReelBar")]
-        [SerializeField]
-        private GameObject ReelBar;
+        [Header("Settings")]
         [SerializeField]
         private float HeightPerUnit;
         [SerializeField]
-        private float ReelDefaultPosition;
+        private float DefaultPosition;
+
+        [Header("ReelBar")]
+        [SerializeField]
+        private GameObject ReelBar;
+        
+
+        [Header("Fish")]
+        [SerializeField]
+        private GameObject Fish;
+
 
         public void Awake()
         {
@@ -30,18 +38,24 @@ namespace HappyHarvest {
             fishingGameUI = _fishingGameUI;
         }
 
-        public void UpdateReelBar(float position)
-        {
-            float target = ReelDefaultPosition + position * HeightPerUnit;
-            ReelBar.transform.localPosition = new Vector3(0f, target, 0f);
-        }
-
         public void UpdateTimer(float time)
         {
             int minute = (int)(time / 60f);
             int second = (int)time % 60;
 
             Timer.text = string.Format("{0:D2}:{1:D2}", minute, second);
+        }
+
+        public void UpdateReelBar(float position)
+        {
+            float target = DefaultPosition + position * HeightPerUnit;
+            ReelBar.transform.localPosition = new Vector3(0f, target, 0f);
+        }
+
+        public void UpdateFish(float position)
+        {
+            float target = DefaultPosition + position * HeightPerUnit;
+            Fish.transform.localPosition = new Vector3(0f, target, 0f);
         }
 
         public void Close()
