@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace HappyHarvest
 {
@@ -9,12 +9,12 @@ namespace HappyHarvest
         
         public override bool CanUse(Vector3Int target)
         {
-            return true;
+            return false;
         }
 
         public override bool Use(Vector3Int target)
         {
-            return true;
+            return false;
         }
 
         public override bool NeedTarget()
