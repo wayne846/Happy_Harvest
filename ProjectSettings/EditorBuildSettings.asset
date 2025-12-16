@@ -17,4 +17,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/HappyHarvest/Scenes/House_Interior.unity
     guid: 5eae6d8f741dc624395c4cd2e57cab18
+  - enabled: 1
+    path: Assets/HappyHarvest/Scenes/mine.unity
+    guid: d0199469bce65a3498c9f4c2844ac6ba
   m_configObjects: {}
