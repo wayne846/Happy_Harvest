@@ -1,18 +1,20 @@
 ﻿using System.Collections;
 using UnityEngine;
 using UnityEngine.Tilemaps;
-using TMPro; // 新增：引用文字系統 (TextMeshPro)
+using TMPro;
 
 public class SimpleMiner : MonoBehaviour
 {
     [Header("必要設置")]
     public Tilemap groundTilemap;
 
-    [Header("金礦設置")]
-    public TileBase goldTileAsset; // 告訴程式「金礦」長什麼樣子
-    public TextMeshProUGUI goldText; // 拖入剛剛做的 UI 文字
+    [Header("視覺設置 (新功能)")]
+    public Transform bodyTransform; // 請拖入剛剛建立的 Body 物件
+    public bool spriteDrawnFacingDown = false; // 如果你的圖片原本就是畫成朝下的，請打勾
 
-    [Header("油條設置")]
+    [Header("金礦與UI")]
+    public TileBase goldTileAsset;
+    public TextMeshProUGUI goldText;
     public Transform fuelFillSprite;
 
     [Header("參數調整")]
@@ -26,7 +28,7 @@ public class SimpleMiner : MonoBehaviour
 
     // 私有變數
     private float currentFuel;
-    private int currentGold = 0; // 新增：目前的金礦數量
+    private int currentGold = 0;
     private bool isBusy = false;
     private Vector3 originalScale;
 
@@ -34,9 +36,11 @@ public class SimpleMiner : MonoBehaviour
     {
         if (fuelFillSprite != null) originalScale = fuelFillSprite.localScale;
         currentFuel = maxFuel;
-
         UpdateFuelBar();
-        UpdateGoldUI(); // 一開始先更新一次文字
+        UpdateGoldUI();
+
+        // --- 遊戲開始時，強制設定為朝下 ---
+        RotatePlayer(Vector2.down);
     }
 
     void Update()
@@ -46,46 +50,58 @@ public class SimpleMiner : MonoBehaviour
         float x = Input.GetAxisRaw("Horizontal");
         float y = Input.GetAxisRaw("Vertical");
 
-        if (x != 0) CheckDestination(new Vector2Int((int)x, 0));
-        else if (y != 0) CheckDestination(new Vector2Int(0, (int)y));
+        if (x != 0)
+        {
+            Vector2Int dir = new Vector2Int((int)x, 0);
+            RotatePlayer(dir);
+            CheckDestination(dir);
+        }
+        else if (y != 0)
+        {
+            Vector2Int dir = new Vector2Int(0, (int)y);
+            RotatePlayer(dir);
+            CheckDestination(dir);
+        }
     }
 
+    void RotatePlayer(Vector2 direction)
+    {
+        if (bodyTransform == null) return;
+
+        // 判斷基準向量：如果你的圖原本是朝右(標準)，基準就是 Right；如果原本朝下，基準就是 Down
+        Vector2 baseDir = spriteDrawnFacingDown ? Vector2.down : Vector2.right;
+
+        // 計算角度
+        float angle = Vector2.SignedAngle(baseDir, direction);
+
+        // 只旋轉 Body，不動 Player 本體
+        bodyTransform.rotation = Quaternion.Euler(0, 0, angle);
+    }
+
+    // --- 以下邏輯不變 ---
     void CheckDestination(Vector2Int direction)
     {
         Vector3 targetWorldPos = transform.position + new Vector3(direction.x, direction.y, 0);
         Vector3Int gridPos = groundTilemap.WorldToCell(targetWorldPos);
         TileBase tile = groundTilemap.GetTile(gridPos);
 
-        if (tile != null)
-        {
-            // 傳入 tile 資訊給挖掘函式，讓它知道挖到了什麼
-            StartCoroutine(DrillRoutine(targetWorldPos, gridPos, tile));
-        }
-        else
-        {
-            StartCoroutine(MoveRoutine(targetWorldPos));
-        }
+        if (tile != null) StartCoroutine(DrillRoutine(targetWorldPos, gridPos, tile));
+        else StartCoroutine(MoveRoutine(targetWorldPos));
     }
 
-    // 修改：多接收一個 tile 參數，用來判斷挖到的是不是金礦
     IEnumerator DrillRoutine(Vector3 targetPos, Vector3Int gridPos, TileBase targetTile)
     {
         isBusy = true;
         yield return new WaitForSeconds(drillTime);
 
-        // 1. 檢查挖到的是不是金礦
         if (targetTile == goldTileAsset)
         {
-            currentGold++; // 金礦 +1
-            UpdateGoldUI(); // 更新介面
-            Debug.Log("挖到金礦了！目前數量：" + currentGold);
+            currentGold++;
+            UpdateGoldUI();
         }
 
-        // 2. 消除方塊
         groundTilemap.SetTile(gridPos, null);
-
         ConsumeFuel(fuelConsumptionDrill);
-
         yield return StartCoroutine(MoveRoutine(targetPos, false));
     }
 
@@ -119,12 +135,8 @@ public class SimpleMiner : MonoBehaviour
         }
     }
 
-    // 新增：更新金礦文字
     void UpdateGoldUI()
     {
-        if (goldText != null)
-        {
-            goldText.text = "Gold: " + currentGold;
-        }
+        if (goldText != null) goldText.text = "Gold: " + currentGold;
     }
 }
