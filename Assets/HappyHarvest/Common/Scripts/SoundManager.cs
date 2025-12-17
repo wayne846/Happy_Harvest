@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -10,7 +10,7 @@ namespace Template2DCommon
     public class SoundManager : MonoBehaviour
     {
         public static SoundManager Instance { get; protected set; }
-    
+
         [Serializable]
         public class SoundData
         {
@@ -24,17 +24,17 @@ namespace Template2DCommon
         public AudioSource SFXReferenceSource;
 
         public SoundData Sound { get; protected set; } = new();
-    
+
         private Queue<AudioSource> m_SFXPool;
 
         private void Awake()
         {
             Instance = this;
-        
+
             const int PoolLength = 16;
 
             m_SFXPool = new Queue<AudioSource>();
-        
+
             for (int i = 0; i < PoolLength; ++i)
             {
                 GameObject obj = new GameObject("SFXPool");
@@ -63,13 +63,19 @@ namespace Template2DCommon
         {
             var source = m_SFXPool.Dequeue();
 
+            if (source == null)
+            {
+                // 如果取出的音效來源已經被銷毀，就直接忽略，避免當機
+                return;
+            }
+
             source.clip = clip;
             source.transform.position = position;
 
             source.spatialBlend = spatialized ? 1.0f : 0.0f;
-        
+
             source.Play();
-        
+
             m_SFXPool.Enqueue(source);
         }
 

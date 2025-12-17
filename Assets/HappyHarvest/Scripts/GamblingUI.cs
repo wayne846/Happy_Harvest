@@ -15,7 +15,15 @@ namespace HappyHarvest
         public GameObject panelRoot;
         public TMP_InputField bet; // 輸入賭注的地方
         public Button spin;         // 開始轉動的按鈕
-        public TextMeshProUGUI resultText;// 顯示結果 (+500) 的文字
+        public Button return_to_farm;
+        //public TextMeshProUGUI resultText;// 顯示結果 (+500) 的文字
+
+        [Header("顯示物件")]
+        public GameObject resultImageObject; // 中獎/結果顯示圖
+
+        [Header("錯誤提示圖")]
+        public GameObject noMoneyImage;      // 情況 A：錢不夠時顯示
+        public GameObject inputErrorImage;   // ★ 情況 B：輸入錯誤(0或負數)時顯示
 
         [Header("轉盤物件")]
         public Transform Wheel_Operator;
@@ -26,10 +34,13 @@ namespace HappyHarvest
         public int numberOfNumberSlots = 8;
         public float spinDuration = 3.0f;
         public int minFullSpins = 5;
+        public int opIndex = 0;
+        public int numIndex = 0;
         public AnimationCurve spinCurve;
 
         private Action onSpinCompleteCallback;
         private bool isSpinning = false; // 防止重複點擊
+        public Gambling.IndexPair index = new Gambling.IndexPair();
 
         private void Start()
         {
@@ -39,8 +50,13 @@ namespace HappyHarvest
                 spin.onClick.AddListener(OnSpinButtonClicked);
             }
 
+            if (return_to_farm != null)
+            {
+                return_to_farm.onClick.AddListener(OnReturnButtonClicked);
+            }
+
             // 初始化 UI 狀態
-            if (resultText != null) resultText.text = "";
+            //if (resultText != null) resultText.text = "";
         }
 
         // 當玩家按下 "SPIN" 按鈕
@@ -61,25 +77,61 @@ namespace HappyHarvest
             }
             Debug.Log($"讀取到的賭注是: {wager}"); // 檢查點 2：賭注讀取對不對
 
+            // 情況 B：輸入錯誤 (0 或 負數)
             if (wager <= 0)
             {
-                Debug.LogWarning("賭注無效");
-                if (resultText) resultText.text = "請輸入金額!";
-                return;
+                // ★ 顯示「輸入錯誤」的圖片
+                StartCoroutine(ShowWarningRoutine(inputErrorImage));
+
+                //if (resultText) resultText.text = "金額無效!";
+                return; // 直接結束，不繼續執行
             }
 
-            if (resultText != null) resultText.text = "";
+            // 重置介面
+            //if (resultText != null) resultText.text = "";
+            if (resultImageObject != null) resultImageObject.SetActive(false);
+            if (noMoneyImage != null) noMoneyImage.SetActive(false);
+            if (inputErrorImage != null) inputErrorImage.SetActive(false);
 
-            // 檢查點 3：連線有沒有斷
+            // 呼叫系統
             if (GamblingSystem != null)
             {
-                Debug.Log("呼叫 GamblingSystem...");
-                GamblingSystem.StartGambling(wager);
+                var resultIndices = GamblingSystem.StartGambling(wager);
+
+                // 情況 A：系統回傳失敗 (-1) 代表錢不夠
+                if (resultIndices.opIndex == -1)
+                {
+                    // ★ 顯示「錢不夠」的圖片
+                    StartCoroutine(ShowWarningRoutine(noMoneyImage));
+                }
             }
-            else
-            {
-                Debug.LogError("嚴重錯誤：GamblingSystem 沒有綁定！請檢查 Inspector！");
-            }
+        }
+
+        // 通用的顯示警告協程 (傳入哪張圖，就顯示哪張)
+        private IEnumerator ShowWarningRoutine(GameObject imageToShow)
+        {
+            if (imageToShow == null) yield break;
+
+            // 1. 顯示指定的圖片
+            imageToShow.SetActive(true);
+
+            // 2. 鎖住按鈕
+            if (spin != null) spin.interactable = false;
+
+            // 3. 等待 2 秒
+            yield return new WaitForSeconds(2.0f);
+
+            // 4. 隱藏圖片
+            imageToShow.SetActive(false);
+
+            // 5. 解鎖按鈕
+            if (spin != null) spin.interactable = true;
+            if (bet != null) bet.ActivateInputField();
+        }
+
+        private void OnReturnButtonClicked()
+        {
+            GameManager.Instance.MoveTo(2, 0);
         }
 
         // 被 Gambling.cs 呼叫，開始執行轉動動畫
@@ -93,14 +145,14 @@ namespace HappyHarvest
             if (bet != null) bet.interactable = false; // 鎖住輸入框
 
             // 啟動轉盤協程
-            StartCoroutine(SpinProcess(targetOp, targetNum));
+            StartCoroutine(SpinProcess());
         }
 
-        private IEnumerator SpinProcess(Gambling.Operator targetOp, int targetNum)
+        private IEnumerator SpinProcess()
         {
             // 同時啟動兩個轉盤，但這裡我們用一個協程來管理整體的等待
-            Coroutine opSpin = StartCoroutine(SpinWheelRoutine(Wheel_Operator, numberOfOperatorSlots, (int)targetOp));
-            Coroutine numSpin = StartCoroutine(SpinWheelRoutine(Wheel_Number, numberOfNumberSlots, targetNum));
+            Coroutine opSpin = StartCoroutine(SpinWheelRoutine(Wheel_Operator, numberOfOperatorSlots, index.opIndex));
+            Coroutine numSpin = StartCoroutine(SpinWheelRoutine(Wheel_Number, numberOfNumberSlots, index.numIndex));
 
             // 等待兩個轉盤都停下來
             yield return opSpin;
@@ -110,24 +162,6 @@ namespace HappyHarvest
 
             // 1. 執行給錢邏輯
             onSpinCompleteCallback?.Invoke();
-
-            // 2. 顯示結果文字 (延遲一點點顯示比較有感)
-            // 這裡我們需要知道剛剛算出來是多少錢，或是簡單顯示 "完成"
-            // 因為 logic 層已經算好錢了，這裡單純顯示運算式即可
-            string opSymbol = "";
-            switch (targetOp)
-            {
-                case Gambling.Operator.Add: opSymbol = "+"; break;
-                case Gambling.Operator.Subtract: opSymbol = "-"; break;
-                case Gambling.Operator.Multiply: opSymbol = "x"; break;
-            }
-
-            if (resultText != null)
-            {
-                resultText.text = $"{opSymbol} {targetNum}";
-                // 可以加個簡單的放大動畫效果
-                StartCoroutine(AnimateText(resultText));
-            }
 
             // 3. 解鎖按鈕，讓玩家可以再次賭博
             isSpinning = false;
@@ -141,7 +175,7 @@ namespace HappyHarvest
             float anglePerSlot = 360f / slots;
             // 假設 0 在正上方，根據你的貼圖可能需要調整 offset
             // 如果數字對不準，請調整這個 offset 值 (例如 + 18f 或 -18f)
-            float angleOffset = 0f;
+            float angleOffset = 22f;
 
             float targetAngle = (targetIndex * anglePerSlot) + angleOffset;
             float endAngle = -(360 * minFullSpins + targetAngle);

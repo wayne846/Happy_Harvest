@@ -22,16 +22,44 @@ namespace HappyHarvest
             public int number;
         }
 
+        public struct IndexPair
+        {
+            public int numIndex;
+            public int opIndex;
+        }
+
         // ----------------------
         // 屬性與變數
         // ----------------------
 
         [Header("設定")]
         [SerializeField]
-        private List<int> nameWeight;
+        private List<Operator> operatorSlots = new List<Operator>
+        {
+            Operator.Subtract,       // 第 0 格
+            Operator.Multiply,  // 第 1 格
+            Operator.Add,  // 第 2 格
+            Operator.Subtract,       // 第 3 格
+            Operator.Add,  // 第 4 格
+            Operator.Multiply,  // 第 5 格
+            Operator.Subtract,       // 第 6 格
+            Operator.Add   // 第 7 格
+        };
 
-        [SerializeField]
-        private List<int> symbolWeight;
+        // 數字轉盤 (假設有 8 格，順時針)
+        private List<int> numberSlots = new List<int>
+        {
+            0,   // 第 0 格
+            1,   // 第 1 格
+            0,   // 第 2 格
+            3,  // 第 3 格
+            0,   // 第 4 格
+            2,   // 第 5 格
+            2,   // 第 6 格
+            1   // 第 7 格
+        };
+
+        public IndexPair index = new IndexPair();
 
         [Header("UI 連結")]
         [SerializeField] private GamblingUI gamblingUI;
@@ -49,11 +77,11 @@ namespace HappyHarvest
             }
         }
 
-        private void Start()
-        {
-            if (nameWeight == null) nameWeight = new List<int>();
-            if (symbolWeight == null) symbolWeight = new List<int>();
-        }
+        //private void Start()
+        //{
+        //    if (nameWeight == null) nameWeight = new List<int>();
+        //     if (symbolWeight == null) symbolWeight = new List<int>();
+        //}
 
         private void OnDestroy()
         {
@@ -72,7 +100,7 @@ namespace HappyHarvest
         /// [公開方法] 啟動賭博流程
         /// </summary>
         /// <param name="wager">玩家下注的金額</param>
-        public void StartGambling(int wager)
+        public IndexPair StartGambling(int wager)
         {
             Debug.Log("ingambling");
             // 1. 取得 Player 實例
@@ -87,18 +115,24 @@ namespace HappyHarvest
                 Debug.Log("findobj");
             }
 
+            index.numIndex = -1;
+            index.opIndex = -1;
+
             // --- 步驟 2：最後檢查 ---
             if (player == null)
             {
                 Debug.LogError("【嚴重錯誤】場景裡找不到任何 PlayerController！請確認你有把主角放進場景裡！");
-                return; // 真的沒救了，停止執行
+                return index; // 真的沒救了，停止執行
             }
+
+            index.numIndex = 9;
+            index.opIndex = 9;
 
             // 2. 檢查賭注是否超過玩家持有的總金錢
             if (wager > player.Coins)
             {
                 Debug.LogWarning($"賭注 ({wager}) 超過持有金錢 ({player.Coins})，無法進行賭博！");
-                return;
+                return index;
             }
 
             // 3. 先扣除玩家的賭注
@@ -121,6 +155,8 @@ namespace HappyHarvest
                 Debug.LogError("未綁定 GamblingUI，直接結算");
                 ComputeAndPayBack(result, wager);
             }
+
+            return index;
         }
 
         /// <summary>
@@ -131,12 +167,12 @@ namespace HappyHarvest
             ResultPair result = new ResultPair();
 
             // 隨機決定運算符號 (0=Add, 1=Subtract, 2=Multiply)
-            int randomOpIndex = Random.Range(0, 3);
-            result.op = (Operator)randomOpIndex;
+            index.opIndex = Random.Range(0, operatorSlots.Count);
+            result.op = operatorSlots[index.opIndex];
 
             // 隨機決定數字 (假設範圍 1~10)
-            int randomNumber = Random.Range(0, 4);
-            result.number = randomNumber;
+            index.numIndex = Random.Range(0, numberSlots.Count);
+            result.number = numberSlots[index.numIndex];
 
             return result;
         }
