@@ -75,7 +75,10 @@ namespace HappyHarvest
         private void OnSpinButtonClicked()
         {
             Debug.Log("按鈕被按下了！"); // 檢查點 1：按鈕有沒有壞
-
+            if (result_text.text != null)
+            {
+                result_text.text = "";
+            }
             if (isSpinning)
             {
                 Debug.Log("正在轉動中，忽略點擊");
@@ -145,12 +148,12 @@ namespace HappyHarvest
             imageToShow.SetActive(false);
 
             // 5. 解鎖按鈕
-            if (spin != null) spin.interactable = true;
-            if (bet != null) bet.ActivateInputField();
             if (result_text.text != null)
             {
                 result_text.text = "";
             }
+            if (spin != null) spin.interactable = true;
+            if (bet != null) bet.ActivateInputField();
         }
 
         private void OnReturnButtonClicked()
