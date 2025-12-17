@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using Template2DCommon;
 using UnityEngine;
@@ -16,8 +16,6 @@ namespace HappyHarvest
 
         private Button m_StartFishing;
         private Button m_FihCalling;
-
-        private ScrollView m_Scrollview;
 
         public FishingSpotUI(VisualElement root)
         {

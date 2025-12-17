@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using Template2DCommon;
 using UnityEngine;
@@ -28,6 +28,7 @@ namespace HappyHarvest
 
             fishingSystem.OpenFishingGameUI += Open;
             fishingSystem.UpdateUIGameInfo += UpdateUI;
+            fishingSystem.ReelAnimation += ReelAnimation;
 
             m_Instance.SetActive(false);
         }
@@ -45,9 +46,16 @@ namespace HappyHarvest
 
         public void UpdateUI(float remaingTime, float captureProgress, float reelPosition, float fishPosition)
         {
-            fishingGameUIController.UpdateReelBar(reelPosition);
             fishingGameUIController.UpdateTimer(remaingTime);
+            fishingGameUIController.UpdateCaptureProgress(captureProgress);
+            fishingGameUIController.UpdateReelBar(reelPosition);
             fishingGameUIController.UpdateFish(fishPosition);
         }
+
+        public void ReelAnimation()
+        {
+            fishingGameUIController.RunReelAnimation();
+        }
+
     }
 }

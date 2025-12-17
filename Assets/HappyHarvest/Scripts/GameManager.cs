@@ -302,6 +302,7 @@ namespace HappyHarvest
         public void UnlockFishSystem()
         {
             Debug.Log("Unlock Fish System");
+            FishingSystem.UnlockState = true;
         }
 
         public void UnlockMineSystem()
