@@ -19,7 +19,7 @@ namespace HappyHarvest
 
         [Header("顯示物件")]
         public GameObject resultImageObject; // 中獎/結果顯示圖
-        public TMP_Text reusult_text;
+        public TMP_Text result_text;
 
         [Header("錯誤提示圖")]
         public GameObject noMoneyImage;      // 情況 A：錢不夠時顯示
@@ -68,6 +68,7 @@ namespace HappyHarvest
             resultImageObject.SetActive(false);
             noMoneyImage.SetActive(false);
             inputErrorImage.SetActive(false);
+            result_text.text = "";
         }
 
         // 當玩家按下 "SPIN" 按鈕
@@ -130,8 +131,15 @@ namespace HappyHarvest
             // 2. 鎖住按鈕
             if (spin != null) spin.interactable = false;
 
-            // 3. 等待 2 秒
-            yield return new WaitForSeconds(2.0f);
+            if (imageToShow == resultImageObject)
+            {
+                yield return new WaitForSeconds(4.0f);
+            }
+            else
+            {
+                // 3. 等待 2 秒
+                yield return new WaitForSeconds(2.0f);
+            }
 
             // 4. 隱藏圖片
             imageToShow.SetActive(false);
@@ -139,6 +147,10 @@ namespace HappyHarvest
             // 5. 解鎖按鈕
             if (spin != null) spin.interactable = true;
             if (bet != null) bet.ActivateInputField();
+            if (result_text.text != null)
+            {
+                result_text.text = "";
+            }
         }
 
         private void OnReturnButtonClicked()
@@ -172,6 +184,8 @@ namespace HappyHarvest
             // 等待兩個轉盤都停下來
             yield return opSpin;
             yield return numSpin;
+
+            yield return new WaitForSeconds(2.0f);
 
             // --- 轉動結束，直接結算 ---
             int final = wager;
@@ -207,7 +221,8 @@ namespace HappyHarvest
             // 防止結算價值小於 0 (如果不想讓賭注變成負債)
             if (final < 0) final = 0;
 
-            showresult(wager.ToString() + " " + resultPair.op.ToString() + " " + resultPair.number.ToString() + "=" + final.ToString());
+            result_text.text = wager.ToString() + " " + resultPair.op.ToString() + " " + resultPair.number.ToString() + " = " + final.ToString();
+            StartCoroutine(ShowWarningRoutine(resultImageObject));
 
             // 1. 執行給錢邏輯
             onSpinCompleteCallback?.Invoke();
@@ -231,12 +246,15 @@ namespace HappyHarvest
             float startAngle = wheel.localEulerAngles.z;
 
             float timer = 0f;
+            if (audioSource != null && roll != null)
+            {
+                audioSource.clip = roll; // 設定要播什麼
+                audioSource.loop = false;      // 錯誤音效不需要循環
+                audioSource.Play();            // 開始播放
+            }
             while (timer < spinDuration)
             {
-                if (audioSource != null && roll != null)
-                {
-                    audioSource.PlayOneShot(roll);
-                }
+
                 timer += Time.deltaTime;
                 float progress = timer / spinDuration;
                 float curveValue = spinCurve.Evaluate(progress);
@@ -245,15 +263,11 @@ namespace HappyHarvest
                 wheel.localEulerAngles = new Vector3(0, 0, currentAngle);
                 yield return null;
             }
+            if (audioSource != null)
+            {
+                audioSource.Stop(); // ★ 這裡就是限制時間的關鍵！
+            }
             wheel.localEulerAngles = new Vector3(0, 0, endAngle);
-        }
-
-        // 簡單的文字彈跳效果
-        private void showresult(string text)
-        {
-            reusult_text.text = text;
-            StartCoroutine(ShowWarningRoutine(resultImageObject));
-            reusult_text.text = "";
         }
     }
 }
