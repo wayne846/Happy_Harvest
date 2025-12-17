@@ -4,6 +4,7 @@ using Template2DCommon;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UIElements;
+using static UnityEditor.Progress;
 using Cursor = UnityEngine.Cursor;
 
 
@@ -30,12 +31,17 @@ namespace HappyHarvest
 
         [Header("UI Document")]
         public VisualTreeAsset MarketEntryTemplate;
+        public VisualTreeAsset UpgradeMarketEntryTemplate;
+        public VisualTreeAsset ItemAndCountTemplate;
         
         [Header("Sounds")] 
         public AudioClip MarketSellSound;
 
         [Header("UI Prefab")]
         public GameObject FishingGameUIPrefab;
+
+        [Header("Sprite")]
+        public Sprite CoinSprite;
 
         protected UIDocument m_Document;
 
@@ -359,7 +365,7 @@ namespace HappyHarvest
 
                 clone.Q<Label>("ItemName").text = item.DisplayName;
                 clone.Q<VisualElement>("ItemIcone").style.backgroundImage = new StyleBackground(item.ItemSprite);
-                
+
                 var button = clone.Q<Button>("ActionButton");
 
                 if (GameManager.Instance.Player.Coins >= item.BuyPrice)
@@ -614,8 +620,7 @@ namespace HappyHarvest
         {
             m_UpgradeMarketPopup.visible = true;
 
-            //we open the Sell Tab by default
-            //ToggleToSell();
+            UpdateUpgradeMarket();
 
             GameManager.Instance.Player.ToggleControl(false);
         }
@@ -625,6 +630,73 @@ namespace HappyHarvest
             SoundManager.Instance.PlayUISound();
             s_Instance.m_UpgradeMarketPopup.visible = false;
             GameManager.Instance.Resume();
+        }
+
+        void UpdateUpgradeMarket()
+        {
+            
+            //clear all the existing entry. A good target for optimization if profiling show bad perf in UI is to pool
+            //instead of delete/recreate entries
+            m_UpgradeMarketContentScrollview.contentContainer.Clear();
+
+            for (int i = 0; i < GameManager.Instance.UpgradesEntries.Length; ++i)
+            {
+                var upgrade = GameManager.Instance.UpgradesEntries[i];
+
+                if (upgrade.isActive) continue;
+
+                bool canUpgrade = true;
+
+                var clone = UpgradeMarketEntryTemplate.CloneTree();
+                clone.Q<Label>("ItemName").text = upgrade.displayName;
+                var button = clone.Q<Button>("ActionButton");
+                var coinClone = ItemAndCountTemplate.CloneTree();
+                coinClone.Q<Label>("ItemCount").text = upgrade.cost.ToString();
+                coinClone.Q<VisualElement>("Item").style.backgroundImage = new StyleBackground(CoinSprite);
+                button.Add(coinClone);
+                for (int j = 0; j < upgrade.requiredItems.Length; ++j) {
+                    var requiredClone = ItemAndCountTemplate.CloneTree();
+                    requiredClone.Q<Label>("ItemCount").text = upgrade.requiredItems[j].StackSize.ToString();
+                    requiredClone.Q<VisualElement>("Item").style.backgroundImage = new StyleBackground(upgrade.requiredItems[j].Item.ItemSprite);
+
+                    button.Add(requiredClone);
+
+                    int index = GameManager.Instance.Player.Inventory.GetIndexOfItem(upgrade.requiredItems[j].Item, false);
+                    if (index == -1 || GameManager.Instance.Player.Inventory.Entries[index].StackSize < upgrade.requiredItems[j].StackSize)
+                    {
+                        canUpgrade = false;
+                    }
+                }
+
+                if (GameManager.Instance.Player.Coins < upgrade.cost)
+                {
+                    canUpgrade = false;
+                }
+
+                if (canUpgrade)
+                {
+                    button.clicked += () =>
+                    {
+                        GameManager.Instance.Player.Coins -= upgrade.cost;
+                        for(int j = 0; j < upgrade.requiredItems.Length; j++)
+                        {
+                            int index = GameManager.Instance.Player.Inventory.GetIndexOfItem(upgrade.requiredItems[j].Item, false);
+                            GameManager.Instance.Player.Inventory.Remove(index, upgrade.requiredItems[j].StackSize);
+                        }
+                        upgrade.isActive = true;
+                        button.SetEnabled(false);
+
+                        upgrade.OnUpgradeSuccess.Invoke();
+                    };
+                    button.SetEnabled(true);
+                }
+                else
+                {
+                    button.SetEnabled(false);
+                }
+
+                m_UpgradeMarketContentScrollview.Add(clone.contentContainer);
+            }
         }
         #endregion
     }

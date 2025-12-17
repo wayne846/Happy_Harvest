@@ -1,8 +1,9 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using Cinemachine;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 using UnityEngine.Tilemaps;
 
@@ -70,6 +71,23 @@ namespace HappyHarvest
         public CropDatabase CropDatabase;
 
         public Storage Storage;
+
+        // Upgrade
+        [System.Serializable] // 讓這個類別可以在 Inspector 中顯示並編輯
+        public class UpgradeEntry
+        {
+            [Header("Basic Info")]
+            public string displayName; // 1. 升級名稱
+            public int cost;           // 2. 金幣花費
+            public bool isActive;
+
+            [Header("Requirements")]
+            public InventorySystem.InventoryEntry[] requiredItems; // 3. 資源花費
+
+            [Header("Events")]
+            public UnityEvent OnUpgradeSuccess;
+        }
+        public UpgradeEntry[] UpgradesEntries;
 
         private bool m_IsTicking;
 
@@ -267,5 +285,12 @@ namespace HappyHarvest
         {
             Instance?.m_EventHandlers.Remove(handler);
         }
+
+        #region Upgrade
+        public void UnlockAnimalSystem()
+        {
+            Debug.Log("Unlock Animal System");
+        }
+        #endregion
     }
 }

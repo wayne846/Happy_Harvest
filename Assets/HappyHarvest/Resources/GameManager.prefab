@@ -24,6 +24,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1853935594432360775}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 16.614565, y: 0.39788264, z: -0.12198752}
   m_LocalScale: {x: 1, y: 1, z: 1}
@@ -31,7 +32,6 @@ Transform:
   m_Children:
   - {fileID: 1875651293223974594}
   m_Father: {fileID: 0}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1853935594432360792
 MonoBehaviour:
@@ -52,6 +52,32 @@ MonoBehaviour:
   StartingTime: 46
   ItemDatabase: {fileID: 11400000, guid: 9af3a7812e32d5e4b958cde796a24cb4, type: 2}
   CropDatabase: {fileID: 11400000, guid: f182af223b74ea44e9c60decb92a78b7, type: 2}
+  UpgradesEntries:
+  - displayName: Animal System
+    cost: 10
+    isActive: 0
+    requiredItems:
+    - Item: {fileID: 11400000, guid: 7dd4bfa02c1367b44a3501547025f6b0, type: 2}
+      StackSize: 2
+    - Item: {fileID: 11400000, guid: 8d7031074574f12499ac3cb4f19de9d3, type: 2}
+      StackSize: 2
+    - Item: {fileID: 11400000, guid: 9e9f866ca785dac48a735a2cc4daf87a, type: 2}
+      StackSize: 2
+    OnUpgradeSuccess:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 1853935594432360792}
+          m_TargetAssemblyTypeName: HappyHarvest.GameManager, Assembly-CSharp
+          m_MethodName: UnlockAnimalSystem
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
 --- !u!1001 &7682750376023478577
 PrefabInstance:
   m_ObjectHideFlags: 0
