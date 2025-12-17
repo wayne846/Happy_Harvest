@@ -59,7 +59,7 @@ namespace HappyHarvest
             1   // 第 7 格
         };
 
-        public IndexPair index = new IndexPair();
+        private IndexPair index = new IndexPair();
 
         [Header("UI 連結")]
         [SerializeField] private GamblingUI gamblingUI;
@@ -76,12 +76,6 @@ namespace HappyHarvest
                 GameManager.Instance.GamblingSystem = this;
             }
         }
-
-        //private void Start()
-        //{
-        //    if (nameWeight == null) nameWeight = new List<int>();
-        //     if (symbolWeight == null) symbolWeight = new List<int>();
-        //}
 
         private void OnDestroy()
         {
@@ -102,7 +96,6 @@ namespace HappyHarvest
         /// <param name="wager">玩家下注的金額</param>
         public IndexPair StartGambling(int wager)
         {
-            Debug.Log("ingambling");
             // 1. 取得 Player 實例
             PlayerController player = GameManager.Instance.Player;
             Debug.Log(player.Coins);
@@ -112,7 +105,6 @@ namespace HappyHarvest
             {
                 // 強制在場景中搜尋掛有 PlayerController 的物件
                 player = FindObjectOfType<PlayerController>();
-                Debug.Log("findobj");
             }
 
             index.numIndex = -1;

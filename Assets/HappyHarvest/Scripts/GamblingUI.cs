@@ -16,7 +16,6 @@ namespace HappyHarvest
         public TMP_InputField bet; // 輸入賭注的地方
         public Button spin;         // 開始轉動的按鈕
         public Button return_to_farm;
-        //public TextMeshProUGUI resultText;// 顯示結果 (+500) 的文字
 
         [Header("顯示物件")]
         public GameObject resultImageObject; // 中獎/結果顯示圖
@@ -153,8 +152,11 @@ namespace HappyHarvest
             resultPair = result;
             index.opIndex = opind;
             index.numIndex = numind;
+<<<<<<< Updated upstream
             Debug.Log(opind);
             Debug.Log(numIndex);
+=======
+>>>>>>> Stashed changes
             if (panelRoot != null) panelRoot.SetActive(true);
 
             onSpinCompleteCallback = onComplete;
@@ -192,6 +194,24 @@ namespace HappyHarvest
                     break;
             }
 
+<<<<<<< Updated upstream
+=======
+            if (resultPair.op == Gambling.Operator.Subtract || resultPair.number == 0)
+            {
+                if (audioSource != null && roll != null)
+                {
+                    audioSource.PlayOneShot(sad);
+                }
+            }
+            else
+            {
+                if (audioSource != null && roll != null)
+                {
+                    audioSource.PlayOneShot(win);
+                }
+            }
+
+>>>>>>> Stashed changes
             // 防止結算價值小於 0 (如果不想讓賭注變成負債)
             if (final < 0) final = 0;
 
@@ -221,9 +241,15 @@ namespace HappyHarvest
             float timer = 0f;
             while (timer < spinDuration)
             {
+<<<<<<< Updated upstream
                 if (roll != null)
                 {
                     roll.LoadAudioData();
+=======
+                if (audioSource != null && roll != null)
+                {
+                    audioSource.PlayOneShot(roll);
+>>>>>>> Stashed changes
                 }
                 timer += Time.deltaTime;
                 float progress = timer / spinDuration;
