@@ -94,7 +94,10 @@ namespace HappyHarvest
             if (wager < 0)
             {
                 wager -= amount; // 不能小於 0
-                StartCoroutine(ShowWarningRoutine(inputErrorImage));
+            }
+            else if (wager > GameManager.Instance.Player.Coins)
+            {
+                wager = GameManager.Instance.Player.Coins;
             }
 
             UpdateBetDisplay();
@@ -105,16 +108,7 @@ namespace HappyHarvest
             if (isSpinning) return;
 
             // 呼叫系統
-            if (GamblingSystem != null)
-            {
-                index = GamblingSystem.StartGambling(-2);
-
-                // 情況 A：系統回傳失敗 (-1) 代表錢不夠
-                if (index.opIndex == 9)
-                {
-                    wager = index.numIndex;
-                }
-            }
+            wager = GameManager.Instance.Player.Coins;
 
             UpdateBetDisplay();
         }
@@ -147,9 +141,8 @@ namespace HappyHarvest
             if (noMoneyImage != null) noMoneyImage.SetActive(false);
             if (inputErrorImage != null) inputErrorImage.SetActive(false);
 
-            if (wager == 0)
+            if (wager <= 0)
             {
-                StartCoroutine(ShowWarningRoutine(inputErrorImage));
                 wager = 0;
                 UpdateBetDisplay();
                 return;
@@ -164,7 +157,6 @@ namespace HappyHarvest
                 if (index.opIndex == 9 && index.numIndex == 9)
                 {
                     // ★ 顯示「錢不夠」的圖片
-                    StartCoroutine(ShowWarningRoutine(noMoneyImage));
                     wager = 0;
                     UpdateBetDisplay();
                 }
