@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
@@ -11,6 +11,8 @@ namespace HappyHarvest {
         private Button CloseButton;
         [SerializeField]
         private TextMeshProUGUI Timer;
+        [SerializeField]
+        private TextMeshProUGUI Capture;
 
         [Header("Settings")]
         [SerializeField]
@@ -44,6 +46,11 @@ namespace HappyHarvest {
             int second = (int)time % 60;
 
             Timer.text = string.Format("{0:D2}:{1:D2}", minute, second);
+        }
+        
+        public void UpdateCaptureProgress(float capture)
+        {
+            Capture.text = capture.ToString("F2");
         }
 
         public void UpdateReelBar(float position)

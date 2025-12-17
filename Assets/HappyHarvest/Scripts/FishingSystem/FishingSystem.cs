@@ -17,6 +17,10 @@ namespace HappyHarvest
         [SerializeField]
         [Min(1)]
         private int FishMovementRate = 1;
+        [SerializeField]
+        [Tooltip("This decides how much capture progress gains per second.")]
+        [Min(1)]
+        private int CaptureRate = 1;
 
         private List<Pond> pondList;
         
@@ -89,11 +93,12 @@ namespace HappyHarvest
             fishPosition = 0f;
             reelPosition = 0f;
             remainTime = 100f;
+            captureProgress = 0f;
 
             float originalFishPosition = fishPosition;
 
             FishMovementCooldown = 0;
-            while (remainTime > 0)
+            while (remainTime > 0 && captureProgress < 100f)
             {
                 reelPosition -= ReelDropRate * Time.deltaTime;
                 reelPosition = Mathf.Max(reelPosition, 0);
@@ -115,6 +120,11 @@ namespace HappyHarvest
                     FishMovementCooldown++;
                 }
 
+                if (Math.Abs(reelPosition - fishPosition) <= 5f)
+                {
+                    captureProgress = Mathf.Min(captureProgress + CaptureRate * Time.deltaTime, 100f);
+                }
+
                 
 
                 remainTime -= Time.deltaTime;
@@ -122,6 +132,7 @@ namespace HappyHarvest
                 UpdateUIGameInfo?.Invoke(remainTime, captureProgress, reelPosition, fishPosition);
                 yield return null;
             }
+
 
             fishingGame = null;
         }
