@@ -7,6 +7,8 @@ using HappyHarvest; // 新增：必須引用這個才能切換場景！
 
 public class SimpleMiner : MonoBehaviour
 {
+    public PlayerController playerController;
+    public Item produceItem;
     [Header("必要設置")]
     public Tilemap groundTilemap;
 
@@ -48,7 +50,6 @@ public class SimpleMiner : MonoBehaviour
         if (fuelFillSprite != null) originalScale = fuelFillSprite.localScale;
         currentFuel = maxFuel;
         UpdateFuelBar();
-        UpdateGoldUI();
         RotatePlayer(Vector2.down);
     }
 
@@ -104,7 +105,8 @@ public class SimpleMiner : MonoBehaviour
         if (targetTile == goldTileAsset)
         {
             currentGold++;
-            UpdateGoldUI();
+            playerController = GameManager.Instance.Player;
+            playerController.AddItem(produceItem);
         }
 
         groundTilemap.SetTile(gridPos, null);
@@ -171,8 +173,5 @@ public class SimpleMiner : MonoBehaviour
         }
     }
 
-    void UpdateGoldUI()
-    {
-        if (goldText != null) goldText.text = "Gold: " + currentGold;
-    }
+
 }

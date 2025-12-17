@@ -1,45 +1,58 @@
-using UnityEngine;
-using HappyHarvest; // ¤Ş¥Î namespace
+ï»¿using UnityEngine;
+using HappyHarvest;
+using UnityEngine.VFX; // å¼•ç”¨ VFX
 
 public class Animal : MonoBehaviour
 {
-    [Header("¼Æ­È³]©w")]
+    [Header("æ•¸å€¼è¨­å®š")]
     [SerializeField] private float hunger = 100f;
     [SerializeField] private float hungerRate = 5f;
 
-    [Header("²£¥X³]©w")]
+    [Header("ç”¢å‡ºè¨­å®š")]
     [SerializeField] private Item produceItem;
-    [SerializeField] private float produceCooldown = 10f; // ¤û¥¤²£¥Xªº§N«o®É¶¡ (¬í)
-    private float nextProduceTime = 0f; // ¤U¤@¦¸¥i¥H²£¥Xªº®É¶¡ÂI
+    [SerializeField] private float produceCooldown = 10f;
+    private float nextProduceTime = 0f;
 
-    [Header("Áı­¹³]©w")]
-    [SerializeField] private Item feedItem; // ½Ğ©ì¤J Hay
+    [Header("é¤µé£Ÿè¨­å®š")]
+    [SerializeField] private Item feedItem;
+
+    [Header("ç‰¹æ•ˆè¨­å®š")]
+    [SerializeField] private VisualEffect feedVFX; // æ‹–å…¥ VFX_Eat
+    [SerializeField] private string vfxEventName = "OnPlay";
+    [SerializeField] private AudioClip feedSound;
 
     public PlayerController playerController;
 
-    [Header("Åã¥Ü³]©w (¹Ï¥Ü¤Æ)")]
-    [SerializeField] private SpriteRenderer statusIconRenderer; // ¥Î¨ÓÅã¥Ü¹Ï¥Üªº SpriteRenderer
-    [SerializeField] private Sprite milkSprite; // ¤û¥¤¹Ï¥Ü (¥i¦¬¦¨®ÉÅã¥Ü)
-    [SerializeField] private Sprite haySprite;  // ½_¯ó¹Ï¥Ü (°§¾j®ÉÅã¥Ü)
+    [Header("é¡¯ç¤ºè¨­å®š")]
+    [SerializeField] private SpriteRenderer statusIconRenderer;
+    [SerializeField] private Sprite milkSprite;
+    [SerializeField] private Sprite haySprite;
+
+    private AudioSource audioSource;
 
     private void Start()
     {
         playerController = GameManager.Instance.Player;
 
-        // ªì©l³]©w¡G¦pªG¨S¦³«ü©w Icon Renderer¡A¹Á¸Õ§ì¨ú¦Û¤v¨­¤Wªº («ØÄ³¦b¤lª«¥ó©ñ¤@­Ó±MªùÅã¥Ü Icon ªº)
         if (statusIconRenderer == null)
             statusIconRenderer = GetComponentInChildren<SpriteRenderer>();
+
+        audioSource = GetComponent<AudioSource>();
+        if (audioSource == null) audioSource = gameObject.AddComponent<AudioSource>();
+
+        // â˜… åˆå§‹åŒ–ï¼šç¢ºä¿éŠæˆ²é–‹å§‹æ™‚ç‰¹æ•ˆæ˜¯éš±è—çš„ï¼Œä»¥å…ä¸€å‡ºä¾†å°±å™´ç‰¹æ•ˆ
+        if (feedVFX != null)
+        {
+            feedVFX.gameObject.SetActive(false);
+        }
 
         UpdateStatusIcon();
     }
 
     void Update()
     {
-        // °§¾j«×ÀH®É¶¡¼W¥[
         hunger += hungerRate * Time.deltaTime;
         hunger = Mathf.Clamp(hunger, 0, 100);
-
-        // §ó·s¹Ï¥ÜÅã¥Üª¬ºA
         UpdateStatusIcon();
     }
 
@@ -50,66 +63,28 @@ public class Animal : MonoBehaviour
 
     public void OnClickAnimal()
     {
-        // Àu¥ı¶¶§Ç¡G¦pªG¾j¤F´NÁı­¹¡A¦pªG¨S¾j¥B·Ç³Æ¦n²£¥X´N¦¬¦¨
-        if (IsHungry())
-        {
-            Feed();
-        }
-        else if (IsReadyToProduce())
-        {
-            Collect();
-        }
-        // ¦pªG¬J¤£¾j¡A¤]¦b§N«o¤¤¡AÂIÀ»¤£°µ¥ô¦ó¨Æ
+        if (IsHungry()) Feed();
+        else if (IsReadyToProduce()) Collect();
     }
 
-    // §PÂ_¬O§_°§¾j
-    private bool IsHungry()
-    {
-        return hunger >= 50;
-    }
-
-    // §PÂ_¬O§_¥i¥H²£¥X (¤£¾j + §N«o®É¶¡¤w¨ì)
-    private bool IsReadyToProduce()
-    {
-        return !IsHungry() && Time.time >= nextProduceTime;
-    }
+    private bool IsHungry() => hunger >= 50;
+    private bool IsReadyToProduce() => !IsHungry() && Time.time >= nextProduceTime;
 
     private void UpdateStatusIcon()
     {
         if (statusIconRenderer == null) return;
-
-        if (IsHungry())
-        {
-            // ª¬ºA 1: °§¾j -> Åã¥Ü½_¯ó
-            statusIconRenderer.sprite = haySprite;
-            statusIconRenderer.enabled = true;
-        }
-        else if (IsReadyToProduce())
-        {
-            // ª¬ºA 2: ¥i¦¬¦¨ -> Åã¥Ü¤û¥¤
-            statusIconRenderer.sprite = milkSprite;
-            statusIconRenderer.enabled = true;
-        }
-        else
-        {
-            // ª¬ºA 3: §N«o¤¤©Î­è¦Y¹¡ -> ¤£Åã¥Ü
-            statusIconRenderer.enabled = false;
-        }
+        if (IsHungry()) { statusIconRenderer.sprite = haySprite; statusIconRenderer.enabled = true; }
+        else if (IsReadyToProduce()) { statusIconRenderer.sprite = milkSprite; statusIconRenderer.enabled = true; }
+        else statusIconRenderer.enabled = false;
     }
 
     public void Feed()
     {
-        if (feedItem == null)
-        {
-            Debug.LogError("¿ù»~¡G½Ğ¦b Inspector ³]©w Feed Item¡I");
-            return;
-        }
+        if (feedItem == null) { Debug.LogError("è«‹è¨­å®š Feed Item"); return; }
 
         if (playerController != null)
         {
             var inventory = playerController.Inventory;
-
-            // ÀË¬d¤â¤W¬O§_®³µÛ¹}®Æ
             if (inventory.EquippedItem == feedItem)
             {
                 int foundIndex = -1;
@@ -125,33 +100,50 @@ public class Animal : MonoBehaviour
                 if (foundIndex != -1)
                 {
                     inventory.Remove(foundIndex, 1);
-                    hunger = 0; // Áı¹¡Âk¹s
-                    Debug.Log($"Áı­¹¦¨¥\¡I®ø¯Ó¤F¤â¤Wªº {feedItem.name}");
-                    // Áı­¹«á·|¦Û°Ê¦b UpdateStatusIcon ¶i¤J§N«o§PÂ_
+                    hunger = 0;
+                    Debug.Log($"é¤µé£ŸæˆåŠŸï¼");
+
+                    // æ’­æ”¾ç‰¹æ•ˆ
+                    PlayFeedEffects();
+                    UpdateStatusIcon();
                 }
             }
             else
             {
-                Debug.Log("Áı­¹¥¢±Ñ¡G½Ğ±N¹}®Æ (Hay) ®³¦b¤â¤W¡I");
+                Debug.Log("è«‹å°‡é£¼æ–™æ‹¿åœ¨æ‰‹ä¸Šï¼");
             }
+        }
+    }
+
+    // â˜… ä¿®æ”¹å¾Œçš„ç‰¹æ•ˆæ’­æ”¾é‚è¼¯
+    private void PlayFeedEffects()
+    {
+        // 1. æ’­æ”¾ VFX
+        if (feedVFX != null)
+        {
+            // â˜… é—œéµä¿®æ­£ï¼šå…ˆå¼·åˆ¶æŠŠ GameObject æ‰“é–‹ (SetActive true)
+            feedVFX.gameObject.SetActive(true);
+
+            // ç„¶å¾Œç™¼é€æ’­æ”¾è¨Šè™Ÿ
+            feedVFX.SendEvent(vfxEventName);
+        }
+
+        // 2. æ’­æ”¾è²éŸ³
+        if (feedSound != null && audioSource != null)
+        {
+            audioSource.PlayOneShot(feedSound);
         }
     }
 
     public void Collect()
     {
-        // ¥u¦³¦b·Ç³Æ¦n®É¤~¯à¦¬¦¨
         if (!IsReadyToProduce()) return;
-
         if (playerController != null && produceItem != null)
         {
-            bool success = playerController.AddItem(produceItem);
-            if (success)
+            if (playerController.AddItem(produceItem))
             {
-                Debug.Log("¦¬¦¨¦¨¥\");
-                // ¡¹ ³]©w¤U¤@¦¸²£¥Xªº®É¶¡ (²{¦b®É¶¡ + §N«o¬í¼Æ)
+                Debug.Log("æ”¶æˆæˆåŠŸ");
                 nextProduceTime = Time.time + produceCooldown;
-
-                // ¦¬¦¨«á¥ß§Y¨ê·s¹Ï¥Ü (·|ÅÜ¦¨ÁôÂÃ¡A¦]¬°¶i¤J§N«o¤F)
                 UpdateStatusIcon();
             }
         }
