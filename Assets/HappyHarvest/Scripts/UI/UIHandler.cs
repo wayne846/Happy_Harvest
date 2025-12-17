@@ -47,6 +47,7 @@ namespace HappyHarvest
 
         // Inventory System
         protected List<VisualElement> m_InventorySlots;     // 快捷欄儲存格
+        protected VisualElement m_HotbarUI;
         protected List<Label> m_ItemCountLabels;            // 快捷欄物品數量
         protected VisualElement m_InventoryPopup;           // 大背包介面
         protected List<VisualElement> m_FullInventorySlots; // 大背包儲存格
@@ -103,6 +104,8 @@ namespace HappyHarvest
             //////// 設定Inventory System ////////
             m_InventoryPopup = m_Document.rootVisualElement.Q<VisualElement>("InventoryPopup");
             m_InventoryPopup.style.display = DisplayStyle.None;
+            // [新增] 取得快捷欄的 UI 容器
+            m_HotbarUI = m_Document.rootVisualElement.Q<VisualElement>("Inventory");
             m_InventorySlots = m_Document.rootVisualElement.Q<VisualElement>("Inventory").Query<VisualElement>("InventoryEntry").ToList();
             m_ItemCountLabels = m_Document.rootVisualElement.Q<VisualElement>("Inventory").Query<Label>("ItemCount").ToList();
             m_FullInventorySlots = m_InventoryPopup.Query<VisualElement>("InventoryEntry").ToList();
@@ -709,6 +712,18 @@ namespace HappyHarvest
                 }
 
                 m_UpgradeMarketContentScrollview.Add(clone.contentContainer);
+            }
+        }
+        /// <summary>
+        /// 設定快捷欄的顯示或隱藏
+        /// </summary>
+        /// <param name="show">true 為顯示，false 為隱藏</param>
+        public static void ShowHotbar(bool show)
+        {
+            if (s_Instance != null && s_Instance.m_HotbarUI != null)
+            {
+                // 設定 DisplayStyle.Flex 為顯示，None 為隱藏
+                s_Instance.m_HotbarUI.style.display = show ? DisplayStyle.Flex : DisplayStyle.None;
             }
         }
         #endregion

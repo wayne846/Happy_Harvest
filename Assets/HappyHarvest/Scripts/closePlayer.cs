@@ -39,6 +39,10 @@ public class SceneObjectController : MonoBehaviour
             playerObject.SetActive(!isMainMenu);
         }
 
+        // 隱藏快捷欄
+        HappyHarvest.UIHandler.ShowHotbar(!isMainMenu);
+
+
         // 控制 GameManager 開關
         if (GameManager.Instance != null)
         {
