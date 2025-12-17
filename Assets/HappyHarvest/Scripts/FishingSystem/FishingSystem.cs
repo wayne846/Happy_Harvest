@@ -53,7 +53,7 @@ namespace HappyHarvest
         private void Awake()
         {
             GameManager.Instance.FishingSystem = this;
-            InstanceCreation?.Invoke(this);
+            InstanceCreation?.Invoke(GameManager.Instance.FishingSystem);
             IntializeChanceTable();
         }
 

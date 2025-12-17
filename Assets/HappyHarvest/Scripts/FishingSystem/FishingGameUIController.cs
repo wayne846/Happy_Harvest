@@ -34,6 +34,7 @@ namespace HappyHarvest {
         public void Awake()
         {
             CloseButton.onClick.AddListener(Close);
+            DontDestroyOnLoad(this);
         }
 
         public void Init(FishingGameUI _fishingGameUI)
@@ -43,6 +44,7 @@ namespace HappyHarvest {
 
         public void Reset()
         {
+            if (FishIcon == null) Debug.Log("error");
             FishIcon.transform.localPosition = new Vector3(0, 0, 1);
         }
 
