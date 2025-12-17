@@ -17,4 +17,13 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/HappyHarvest/Scenes/House_Interior.unity
     guid: 5eae6d8f741dc624395c4cd2e57cab18
+<<<<<<< Updated upstream
+=======
+  - enabled: 1
+    path: Assets/HappyHarvest/Scenes/mine.unity
+    guid: d0199469bce65a3498c9f4c2844ac6ba
+  - enabled: 1
+    path: Assets/HappyHarvest/Scenes/Gambling.unity
+    guid: 55fa301dfa3c2c7459138a3d290e1605
+>>>>>>> Stashed changes
   m_configObjects: {}
