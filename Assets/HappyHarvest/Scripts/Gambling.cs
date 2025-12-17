@@ -120,8 +120,14 @@ namespace HappyHarvest
             index.numIndex = 9;
             index.opIndex = 9;
 
+            if (wager == -2)
+            {
+                index.numIndex = player.Coins;
+                return index;
+            }
+
             // 2. 檢查賭注是否超過玩家持有的總金錢
-            if (wager > player.Coins)
+            if (wager > player.Coins || player.Coins == 0)
             {
                 Debug.LogWarning($"賭注 ({wager}) 超過持有金錢 ({player.Coins})，無法進行賭博！");
                 return index;

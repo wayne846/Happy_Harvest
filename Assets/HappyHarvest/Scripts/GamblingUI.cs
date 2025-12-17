@@ -13,9 +13,14 @@ namespace HappyHarvest
 
         [Header("UI 元件")]
         public GameObject panelRoot;
-        public TMP_InputField bet; // 輸入賭注的地方
+        public TMP_Text bet; // 輸入賭注的地方
         public Button spin;         // 開始轉動的按鈕
         public Button return_to_farm;
+        public Button plus_one;
+        public Button minus_one;
+        public Button plus_ten;
+        public Button minus_ten;
+        public Button ALL;
 
         [Header("顯示物件")]
         public GameObject resultImageObject; // 中獎/結果顯示圖
@@ -52,11 +57,19 @@ namespace HappyHarvest
 
         private void Start()
         {
-            // 綁定按鈕事件
-            if (spin != null)
+            if (bet != null)
             {
-                spin.onClick.AddListener(OnSpinButtonClicked);
+                bet.text = "0";
             }
+
+            // 綁定按鈕事件
+            if (spin != null) spin.onClick.AddListener(OnSpinButtonClicked);
+
+            if (plus_one != null) plus_one.onClick.AddListener(() => AdjustBet(1));
+            if (minus_one != null) minus_one.onClick.AddListener(() => AdjustBet(-1));
+            if (plus_ten != null) plus_ten.onClick.AddListener(() => AdjustBet(10));
+            if (minus_ten != null) minus_ten.onClick.AddListener(() => AdjustBet(-10));
+            if (ALL != null) ALL.onClick.AddListener(OnAllInClicked);
 
             if (return_to_farm != null)
             {
@@ -69,6 +82,50 @@ namespace HappyHarvest
             noMoneyImage.SetActive(false);
             inputErrorImage.SetActive(false);
             result_text.text = "";
+            SetButtonsInteractable(true);
+        }
+
+        private void AdjustBet(int amount)
+        {
+            if (isSpinning) return;
+
+            wager += amount;
+
+            if (wager < 0)
+            {
+                wager -= amount; // 不能小於 0
+                StartCoroutine(ShowWarningRoutine(inputErrorImage));
+            }
+
+            UpdateBetDisplay();
+        }
+
+        private void OnAllInClicked()
+        {
+            if (isSpinning) return;
+
+            // 呼叫系統
+            if (GamblingSystem != null)
+            {
+                index = GamblingSystem.StartGambling(-2);
+
+                // 情況 A：系統回傳失敗 (-1) 代表錢不夠
+                if (index.opIndex == 9)
+                {
+                    wager = index.numIndex;
+                }
+            }
+
+            UpdateBetDisplay();
+        }
+
+        private void UpdateBetDisplay()
+        {
+            // ★★★ 雖然語法一樣是用 .text，但現在它是改一般的 Text 元件 ★★★
+            if (bet != null)
+            {
+                bet.text = wager.ToString();
+            }
         }
 
         // 當玩家按下 "SPIN" 按鈕
@@ -85,28 +142,18 @@ namespace HappyHarvest
                 return;
             }
 
-            wager = 0;
-            if (bet != null && int.TryParse(bet.text, out int result))
-            {
-                wager = result;
-            }
-            Debug.Log($"讀取到的賭注是: {wager}"); // 檢查點 2：賭注讀取對不對
-
-            // 情況 B：輸入錯誤 (0 或 負數)
-            if (wager <= 0)
-            {
-                // ★ 顯示「輸入錯誤」的圖片
-                StartCoroutine(ShowWarningRoutine(inputErrorImage));
-
-                //if (resultText) resultText.text = "金額無效!";
-                return; // 直接結束，不繼續執行
-            }
-
             // 重置介面
-            //if (resultText != null) resultText.text = "";
             if (resultImageObject != null) resultImageObject.SetActive(false);
             if (noMoneyImage != null) noMoneyImage.SetActive(false);
             if (inputErrorImage != null) inputErrorImage.SetActive(false);
+
+            if (wager == 0)
+            {
+                StartCoroutine(ShowWarningRoutine(inputErrorImage));
+                wager = 0;
+                UpdateBetDisplay();
+                return;
+            }
 
             // 呼叫系統
             if (GamblingSystem != null)
@@ -118,7 +165,8 @@ namespace HappyHarvest
                 {
                     // ★ 顯示「錢不夠」的圖片
                     StartCoroutine(ShowWarningRoutine(noMoneyImage));
-                    return;
+                    wager = 0;
+                    UpdateBetDisplay();
                 }
             }
         }
@@ -132,7 +180,7 @@ namespace HappyHarvest
             imageToShow.SetActive(true);
 
             // 2. 鎖住按鈕
-            if (spin != null) spin.interactable = false;
+            SetButtonsInteractable(false);
 
             if (imageToShow == resultImageObject)
             {
@@ -152,8 +200,7 @@ namespace HappyHarvest
             {
                 result_text.text = "";
             }
-            if (spin != null) spin.interactable = true;
-            if (bet != null) bet.ActivateInputField();
+            SetButtonsInteractable(true);
         }
 
         private void OnReturnButtonClicked()
@@ -171,11 +218,25 @@ namespace HappyHarvest
 
             onSpinCompleteCallback = onComplete;
             isSpinning = true;
-            spin.interactable = false; // 轉動時鎖住按鈕
-            if (bet != null) bet.interactable = false; // 鎖住輸入框
+            SetButtonsInteractable(false);
 
             // 啟動轉盤協程
             StartCoroutine(SpinProcess());
+        }
+
+        private void SetButtonsInteractable(bool state)
+        {
+            if (spin != null) spin.interactable = state;
+            if (return_to_farm != null) return_to_farm.interactable = state;
+
+            // 下注按鈕在轉動時鎖住
+            if (plus_one != null) plus_one.interactable = state;
+            if (plus_ten != null) plus_ten.interactable = state;
+            if (minus_one != null) minus_one.interactable = state;
+            if (minus_ten != null) minus_ten.interactable = state;
+            if (ALL != null) ALL.interactable = state;
+
+            // ★ 注意：betDisplay 不需要設定，因為 Text 本來就不能點
         }
 
         private IEnumerator SpinProcess()
@@ -232,8 +293,7 @@ namespace HappyHarvest
 
             // 3. 解鎖按鈕，讓玩家可以再次賭博
             isSpinning = false;
-            spin.interactable = true;
-            if (bet != null) bet.interactable = true;
+            SetButtonsInteractable(true);
         }
 
         // 單個轉盤的轉動邏輯
