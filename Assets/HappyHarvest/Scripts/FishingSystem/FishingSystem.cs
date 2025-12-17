@@ -38,6 +38,10 @@ namespace HappyHarvest
 
         public event Action OpenFishingGameUI;
         public event Action<float, float, float, float> UpdateUIGameInfo;
+        public event Action ReelAnimation;
+
+        //Info
+        public bool UnlockState = false;
 
         private Coroutine fishingGame;
 
@@ -89,52 +93,76 @@ namespace HappyHarvest
         {
             OpenFishingGameUI?.Invoke();
             GameManager.Instance.Player.ToggleFish(true);
-            FishMoveDistance = 0f;
-            fishPosition = 0f;
-            reelPosition = 0f;
+
             remainTime = 100f;
-            captureProgress = 0f;
-
-            float originalFishPosition = fishPosition;
-
-            FishMovementCooldown = 0;
-            while (remainTime > 0 && captureProgress < 100f)
+            while (remainTime > 0f)
             {
-                reelPosition -= ReelDropRate * Time.deltaTime;
-                reelPosition = Mathf.Max(reelPosition, 0);
+                FishMoveDistance = 0f;
+                fishPosition = 0f;
+                reelPosition = 0f;
+                captureProgress = 0f;
 
-                fishPosition = originalFishPosition + Mathf.Lerp(0, FishMoveDistance, ((float)FishMovementCooldown / FishMovementRate));
+                float originalFishPosition = fishPosition;
 
-                fishPosition = Mathf.Clamp(fishPosition, 0f, 100f);
-
-                if (FishMovementCooldown == FishMovementRate)
+                FishMovementCooldown = 0;
+                while (captureProgress < 100f)
                 {
-                    FishMoveDistance = 0f;
-                    originalFishPosition = fishPosition;
+                    if(remainTime <= 0f)
+                    {
+                        break;
+                    }
 
-                    RandomWeightedFunction.Pick(movementWF).Invoke();
-                    FishMovementCooldown = 0;
+                    reelPosition -= ReelDropRate * Time.deltaTime;
+                    reelPosition = Mathf.Max(reelPosition, 0);
+
+                    fishPosition = originalFishPosition + Mathf.Lerp(0, FishMoveDistance, ((float)FishMovementCooldown / FishMovementRate));
+
+                    fishPosition = Mathf.Clamp(fishPosition, 0f, 100f);
+
+                    if (FishMovementCooldown == FishMovementRate)
+                    {
+                        FishMoveDistance = 0f;
+                        originalFishPosition = fishPosition;
+
+                        RandomWeightedFunction.Pick(movementWF).Invoke();
+                        FishMovementCooldown = 0;
+                    }
+                    else
+                    {
+                        FishMovementCooldown++;
+                    }
+
+                    if (Math.Abs(reelPosition - fishPosition) <= 5f)
+                    {
+                        captureProgress = Mathf.Min(captureProgress + CaptureRate * Time.deltaTime, 100f);
+                    }
+
+
+
+                    remainTime -= Time.deltaTime;
+
+                    UpdateUIGameInfo?.Invoke(remainTime, captureProgress, reelPosition, fishPosition);
+                    yield return null;
                 }
-                else
+                   
+                if(captureProgress >= 100f)
                 {
-                    FishMovementCooldown++;
+                    yield return CaptureFish();
                 }
-
-                if (Math.Abs(reelPosition - fishPosition) <= 5f)
-                {
-                    captureProgress = Mathf.Min(captureProgress + CaptureRate * Time.deltaTime, 100f);
-                }
-
-                
-
-                remainTime -= Time.deltaTime;
-
-                UpdateUIGameInfo?.Invoke(remainTime, captureProgress, reelPosition, fishPosition);
-                yield return null;
             }
 
 
-            fishingGame = null;
+            StopFishing();
+        }
+
+        private IEnumerator CaptureFish()
+        {
+            ReelAnimation?.Invoke();
+
+            yield return new WaitForSeconds(3);
+
+            GameManager instance = GameManager.Instance;
+            instance.Player.AddItem(instance.ItemDatabase.GetFromID("fih_calling"));
         }
 
         private void FishMoveUp()

@@ -28,6 +28,7 @@ namespace HappyHarvest
 
             fishingSystem.OpenFishingGameUI += Open;
             fishingSystem.UpdateUIGameInfo += UpdateUI;
+            fishingSystem.ReelAnimation += ReelAnimation;
 
             m_Instance.SetActive(false);
         }
@@ -50,5 +51,11 @@ namespace HappyHarvest
             fishingGameUIController.UpdateReelBar(reelPosition);
             fishingGameUIController.UpdateFish(fishPosition);
         }
+
+        public void ReelAnimation()
+        {
+            fishingGameUIController.RunReelAnimation();
+        }
+
     }
 }

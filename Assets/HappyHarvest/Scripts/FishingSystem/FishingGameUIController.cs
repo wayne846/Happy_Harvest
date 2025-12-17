@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
@@ -28,6 +29,8 @@ namespace HappyHarvest {
         [Header("Fish")]
         [SerializeField]
         private GameObject Fish;
+        [SerializeField]
+        private GameObject FishIcon;
 
 
         public void Awake()
@@ -63,6 +66,30 @@ namespace HappyHarvest {
         {
             float target = DefaultPosition + position * HeightPerUnit;
             Fish.transform.localPosition = new Vector3(0f, target, 0f);
+        }
+
+        public void RunReelAnimation()
+        {
+            StartCoroutine(ReelAnimation());
+        }
+
+        IEnumerator ReelAnimation()
+        {
+            float animationTime = 0f;
+
+            while(animationTime <= 2.5f)
+            {
+                Vector3 newPosition = new Vector3();
+                newPosition.y = Mathf.Lerp(0, -550f, animationTime / 2.5f);
+
+                FishIcon.transform.localPosition = newPosition;
+
+                animationTime += Time.deltaTime;
+                yield return null;
+            }
+
+            yield return new WaitForSeconds(3 - animationTime);
+            FishIcon.transform.localPosition = new Vector3();
         }
 
         public void Close()

@@ -666,6 +666,7 @@ MonoBehaviour:
   DefaultPosition: -350
   ReelBar: {fileID: 1381452904992490187}
   Fish: {fileID: 5466608554648415410}
+  FishIcon: {fileID: 5311721014940846830}
 --- !u!1 &8746362710355526441
 GameObject:
   m_ObjectHideFlags: 0
