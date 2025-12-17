@@ -78,6 +78,58 @@ MonoBehaviour:
             m_StringArgument: 
             m_BoolArgument: 0
           m_CallState: 2
+  - displayName: Fish System
+    cost: 10
+    isActive: 0
+    requiredItems:
+    - Item: {fileID: 11400000, guid: 7dd4bfa02c1367b44a3501547025f6b0, type: 2}
+      StackSize: 2
+    - Item: {fileID: 11400000, guid: 8d7031074574f12499ac3cb4f19de9d3, type: 2}
+      StackSize: 2
+    - Item: {fileID: 11400000, guid: 9e9f866ca785dac48a735a2cc4daf87a, type: 2}
+      StackSize: 2
+    OnUpgradeSuccess:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 1853935594432360792}
+          m_TargetAssemblyTypeName: HappyHarvest.GameManager, Assembly-CSharp
+          m_MethodName: UnlockFishSystem
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+  - displayName: Mine System
+    cost: 100
+    isActive: 0
+    requiredItems:
+    - Item: {fileID: 11400000, guid: 7dd4bfa02c1367b44a3501547025f6b0, type: 2}
+      StackSize: 10
+    - Item: {fileID: 11400000, guid: 8d7031074574f12499ac3cb4f19de9d3, type: 2}
+      StackSize: 10
+    - Item: {fileID: 11400000, guid: 9e9f866ca785dac48a735a2cc4daf87a, type: 2}
+      StackSize: 10
+    - Item: {fileID: 11400000, guid: fda80188332cc7d4baa924f7fd6f52e4, type: 2}
+      StackSize: 1
+    OnUpgradeSuccess:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 1853935594432360792}
+          m_TargetAssemblyTypeName: HappyHarvest.GameManager, Assembly-CSharp
+          m_MethodName: UnlockMineSystem
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
 --- !u!1001 &7682750376023478577
 PrefabInstance:
   m_ObjectHideFlags: 0

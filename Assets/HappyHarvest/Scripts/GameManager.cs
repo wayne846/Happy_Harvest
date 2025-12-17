@@ -72,7 +72,7 @@ namespace HappyHarvest
 
         public Storage Storage;
 
-        // Upgrade
+        
         [System.Serializable] // 讓這個類別可以在 Inspector 中顯示並編輯
         public class UpgradeEntry
         {
@@ -87,6 +87,9 @@ namespace HappyHarvest
             [Header("Events")]
             public UnityEvent OnUpgradeSuccess;
         }
+        [Header("Upgrade")]
+        GameObject AnimalSystemObstacle;
+        GameObject MineSystemObstacle;
         public UpgradeEntry[] UpgradesEntries;
 
         private bool m_IsTicking;
@@ -117,6 +120,9 @@ namespace HappyHarvest
                 DayDurationInSeconds = 1.0f;
                 Debug.LogError("The day length on the GameManager is set to 0, the length need to be set to a positive value");
             }
+
+            AnimalSystemObstacle = GameObject.Find("AnimalSystemObstacle");
+            MineSystemObstacle = GameObject.Find("MineSystemObstacle");
         }
 
         private void Start()
@@ -290,6 +296,19 @@ namespace HappyHarvest
         public void UnlockAnimalSystem()
         {
             Debug.Log("Unlock Animal System");
+            AnimalSystemObstacle.SetActive(false);
+        }
+
+        public void UnlockFishSystem()
+        {
+            Debug.Log("Unlock Fish System");
+        }
+
+        public void UnlockMineSystem()
+        {
+            Debug.Log("Unlock Mine System");
+            MineSystemObstacle.SetActive(false);
+
         }
         #endregion
     }
