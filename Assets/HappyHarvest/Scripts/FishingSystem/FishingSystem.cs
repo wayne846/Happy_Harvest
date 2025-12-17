@@ -154,7 +154,7 @@ namespace HappyHarvest
             yield return new WaitForSeconds(3);
 
             GameManager instance = GameManager.Instance;
-            instance.Player.AddItem(instance.ItemDatabase.GetFromID("fih_calling"));
+            instance.Player.AddItem(instance.ItemDatabase.GetFromID("fish"));
         }
 
         private void FishMoveUp()

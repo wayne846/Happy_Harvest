@@ -10,16 +10,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 176e7c6242a0f474a8ef16c720fbae33, type: 3}
-  m_Name: FihCalling
+  m_Name: Fish
   m_EditorClassIdentifier: 
-  UniqueID: fih_calling
-  DisplayName: Fih Calling
-  DisplayDescription: "\u9B5A\u4E4B\u547C\u559A"
-  ItemSprite: {fileID: 21300000, guid: 234b61141f43de64792a4b2cb0ba1071, type: 3}
+  UniqueID: fish
+  DisplayName: Fish
+  DisplayDescription: "\u4E00\u689D\u6A58\u8272\u7684\u9B5A"
+  ItemSprite: {fileID: 21300000, guid: 466b97b93f1f6474b87cada825f7848d, type: 3}
   MaxStackSize: 10
   Consumable: 1
   BuyPrice: -1
-  VisualPrefab: {fileID: 6290163647523993554, guid: 0fb18c8c222c40847a05c56dae7c4aaf, type: 3}
+  VisualPrefab: {fileID: 6290163647523993554, guid: 387a430bd72b3084e942d3103e3a8c7d, type: 3}
   PlayerAnimatorTriggerUse: 
   UseSound:
   - {fileID: 8300000, guid: f09ed1dd35d0d7d4a814d2991829c7de, type: 3}
