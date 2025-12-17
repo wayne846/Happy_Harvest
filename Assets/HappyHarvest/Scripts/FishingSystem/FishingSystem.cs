@@ -39,6 +39,7 @@ namespace HappyHarvest
 
         private List<WeightedFunction> movementWF;
 
+        public static event Action<FishingSystem> InstanceCreation;
         public event Action OpenFishingGameUI;
         public event Action CloseFishingGameUI;
         public event Action<float, float, float> UpdateUIGameInfo;
@@ -52,6 +53,7 @@ namespace HappyHarvest
         private void Awake()
         {
             GameManager.Instance.FishingSystem = this;
+            InstanceCreation?.Invoke(this);
             IntializeChanceTable();
         }
 

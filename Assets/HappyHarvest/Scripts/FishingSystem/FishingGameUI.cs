@@ -17,21 +17,26 @@ namespace HappyHarvest
 
         private FishingGameUIController fishingGameUIController;
 
-        public FishingGameUI(GameObject UI_Instance, FishingSystem _fishingSystem)
+        public FishingGameUI(GameObject UI_Instance)
         {
             m_Instance = UI_Instance;
 
             fishingGameUIController = m_Instance.GetComponent<FishingGameUIController>();
             fishingGameUIController.Init(this);
 
+            FishingSystem.InstanceCreation += Init;
+
+            m_Instance.SetActive(false);
+        }
+
+        void Init(FishingSystem _fishingSystem)
+        {
             fishingSystem = _fishingSystem;
 
             fishingSystem.OpenFishingGameUI += Open;
             fishingSystem.CloseFishingGameUI += Close;
             fishingSystem.UpdateUIGameInfo += UpdateUI;
             fishingSystem.ReelAnimation += ReelAnimation;
-
-            m_Instance.SetActive(false);
         }
 
         public void Open()

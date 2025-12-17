@@ -210,7 +210,7 @@ namespace HappyHarvest
 
         void Start()
         {
-            m_FishingGameUI = new FishingGameUI(Instantiate(FishingGameUIPrefab), GameManager.Instance.FishingSystem);
+            m_FishingGameUI = new FishingGameUI(Instantiate(FishingGameUIPrefab));
         }
 
 
