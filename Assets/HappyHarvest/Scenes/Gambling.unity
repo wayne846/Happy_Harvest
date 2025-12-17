@@ -822,7 +822,10 @@ RectTransform:
   - {fileID: 1045856542}
   - {fileID: 2121495447}
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
   - {fileID: 783711979}
+=======
+>>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
   m_Father: {fileID: 995163771}
@@ -1217,10 +1220,13 @@ MonoBehaviour:
   spin: {fileID: 463993862}
   return_to_farm: {fileID: 1045856543}
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
   resultImageObject: {fileID: 0}
   noMoneyImage: {fileID: 2121495446}
   inputErrorImage: {fileID: 783711978}
 =======
+=======
+>>>>>>> Stashed changes
   resultText: {fileID: 0}
 >>>>>>> Stashed changes
   Wheel_Operator: {fileID: 1786990284}
@@ -2316,7 +2322,11 @@ GameObject:
   - component: {fileID: 2121495448}
   m_Layer: 5
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
   m_Name: no_money
+=======
+  m_Name: Image
+>>>>>>> Stashed changes
 =======
   m_Name: Image
 >>>>>>> Stashed changes
