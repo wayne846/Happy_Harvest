@@ -121,8 +121,7 @@ namespace HappyHarvest
                 Debug.LogError("The day length on the GameManager is set to 0, the length need to be set to a positive value");
             }
 
-            AnimalSystemObstacle = GameObject.Find("AnimalSystemObstacle");
-            MineSystemObstacle = GameObject.Find("MineSystemObstacle");
+            
         }
 
         private void Start()
@@ -296,6 +295,7 @@ namespace HappyHarvest
         public void UnlockAnimalSystem()
         {
             Debug.Log("Unlock Animal System");
+            AnimalSystemObstacle = GameObject.Find("AnimalSystemObstacle");
             AnimalSystemObstacle.SetActive(false);
         }
 
@@ -308,8 +308,8 @@ namespace HappyHarvest
         public void UnlockMineSystem()
         {
             Debug.Log("Unlock Mine System");
+            MineSystemObstacle = GameObject.Find("MineSystemObstacle");
             MineSystemObstacle.SetActive(false);
-
         }
         #endregion
     }
