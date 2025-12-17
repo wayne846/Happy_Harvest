@@ -1,17 +1,17 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace HappyHarvest
 {
     /// <summary>
-    /// ½ä³Õ¨t²Î
-    /// ­t³d³B²z½ä³Õ¤p¹CÀ¸ªºÅŞ¿è¡G¥ı¦©°£½äª` -> ¥Í¦¨ÀH¾÷¹Bºâ -> ±N¹Bºâ«áªºª÷ÃBÁÙµ¹ª±®a¡C
+    /// è³­åšç³»çµ±
+    /// è² è²¬è™•ç†è³­åšå°éŠæˆ²çš„é‚è¼¯ï¼šå…ˆæ‰£é™¤è³­æ³¨ -> ç”Ÿæˆéš¨æ©Ÿé‹ç®— -> å°‡é‹ç®—å¾Œçš„é‡‘é¡é‚„çµ¦ç©å®¶ã€‚
     /// </summary>
     public class Gambling : MonoBehaviour
     {
         // ----------------------
-        // ¸ê®Æµ²ºc©w¸q
+        // è³‡æ–™çµæ§‹å®šç¾©
         // ----------------------
 
         public enum Operator { Add, Subtract, Multiply }
@@ -23,23 +23,26 @@ namespace HappyHarvest
         }
 
         // ----------------------
-        // Äİ©Ê»PÅÜ¼Æ
+        // å±¬æ€§èˆ‡è®Šæ•¸
         // ----------------------
 
-        [Header("³]©w")]
+        [Header("è¨­å®š")]
         [SerializeField]
         private List<int> nameWeight;
 
         [SerializeField]
         private List<int> symbolWeight;
 
+        [Header("UI é€£çµ")]
+        [SerializeField] private GamblingUI gamblingUI;
+
         // ----------------------
-        // Unity ¥Í©R¶g´Á
+        // Unity ç”Ÿå‘½é€±æœŸ
         // ----------------------
 
         private void Awake()
         {
-            // ¨t²Î±Ò°Ê®É¡A±N¦Û¤vµù¥U¨ì GameManager
+            // ç³»çµ±å•Ÿå‹•æ™‚ï¼Œå°‡è‡ªå·±è¨»å†Šåˆ° GameManager
             if (GameManager.Instance != null)
             {
                 GameManager.Instance.GamblingSystem = this;
@@ -54,7 +57,7 @@ namespace HappyHarvest
 
         private void OnDestroy()
         {
-            // ª«¥ó¾P·´®É¡A¨ú®øµù¥U
+            // ç‰©ä»¶éŠ·æ¯€æ™‚ï¼Œå–æ¶ˆè¨»å†Š
             if (GameManager.Instance != null && GameManager.Instance.GamblingSystem == this)
             {
                 GameManager.Instance.GamblingSystem = null;
@@ -62,68 +65,91 @@ namespace HappyHarvest
         }
 
         // ----------------------
-        // ¥D­n¥\¯à¤èªk
+        // ä¸»è¦åŠŸèƒ½æ–¹æ³•
         // ----------------------
 
         /// <summary>
-        /// [¤½¶}¤èªk] ±Ò°Ê½ä³Õ¬yµ{
+        /// [å…¬é–‹æ–¹æ³•] å•Ÿå‹•è³­åšæµç¨‹
         /// </summary>
-        /// <param name="wager">ª±®a¤Uª`ªºª÷ÃB</param>
+        /// <param name="wager">ç©å®¶ä¸‹æ³¨çš„é‡‘é¡</param>
         public void StartGambling(int wager)
         {
-            // 1. ¨ú±o Player ¹ê¨Ò
+            Debug.Log("ingambling");
+            // 1. å–å¾— Player å¯¦ä¾‹
             PlayerController player = GameManager.Instance.Player;
+            Debug.Log(player.Coins);
 
+            // æ–¹æ³• Bï¼šå‚™æ¡ˆ (å¦‚æœ GameManager æ­»æ‰æˆ–ä¸åœ¨å ´ï¼Œè‡ªå·±å»å ´æ™¯æ‰¾)
             if (player == null)
             {
-                Debug.LogError("¿ù»~¡G§ä¤£¨ì Player ¹ê¨Ò¡I");
-                return;
+                // å¼·åˆ¶åœ¨å ´æ™¯ä¸­æœå°‹æ›æœ‰ PlayerController çš„ç‰©ä»¶
+                player = FindObjectOfType<PlayerController>();
+                Debug.Log("findobj");
             }
 
-            // 2. ÀË¬d½äª`¬O§_¶W¹Lª±®a«ù¦³ªºÁ`ª÷¿ú
+            // --- æ­¥é©Ÿ 2ï¼šæœ€å¾Œæª¢æŸ¥ ---
+            if (player == null)
+            {
+                Debug.LogError("ã€åš´é‡éŒ¯èª¤ã€‘å ´æ™¯è£¡æ‰¾ä¸åˆ°ä»»ä½• PlayerControllerï¼è«‹ç¢ºèªä½ æœ‰æŠŠä¸»è§’æ”¾é€²å ´æ™¯è£¡ï¼");
+                return; // çœŸçš„æ²’æ•‘äº†ï¼Œåœæ­¢åŸ·è¡Œ
+            }
+
+            // 2. æª¢æŸ¥è³­æ³¨æ˜¯å¦è¶…éç©å®¶æŒæœ‰çš„ç¸½é‡‘éŒ¢
             if (wager > player.Coins)
             {
-                Debug.LogWarning($"½äª` ({wager}) ¶W¹L«ù¦³ª÷¿ú ({player.Coins})¡AµLªk¶i¦æ½ä³Õ¡I");
+                Debug.LogWarning($"è³­æ³¨ ({wager}) è¶…éæŒæœ‰é‡‘éŒ¢ ({player.Coins})ï¼Œç„¡æ³•é€²è¡Œè³­åšï¼");
                 return;
             }
 
-            // 3. ¥ı¦©°£ª±®aªº½äª`
+            // 3. å…ˆæ‰£é™¤ç©å®¶çš„è³­æ³¨
             player.Coins -= wager;
 
-            // 4. ²£¥ÍÀH¾÷ªº¾Ş§@²Å(+-*)»P¼Æ¦r
+            // 2. ç”¢ç”Ÿçµæœ
             ResultPair result = GenerateResult();
 
-            // 5. ­pºâµ²ªG¨Ã±N¿úÁÙµ¹ª±®a
-            ComputeAndPayBack(result, wager);
+            if (gamblingUI != null)
+            {
+                gamblingUI.OpenAndSpin(result.op, result.number, () =>
+                {
+                    // é€™æ˜¯ç•¶ UI æŒ‰ä¸‹ "ç¢ºå®š" å¾Œæœƒå›é ­åŸ·è¡Œçš„ç¨‹å¼ç¢¼
+                    ComputeAndPayBack(result, wager);
+                });
+            }
+            else
+            {
+                // å¦‚æœæ²’æœ‰æ¥ UI (é™¤éŒ¯ç”¨)ï¼Œç›´æ¥çµç®—
+                Debug.LogError("æœªç¶å®š GamblingUIï¼Œç›´æ¥çµç®—");
+                ComputeAndPayBack(result, wager);
+            }
         }
 
         /// <summary>
-        /// [¤º³¡¤èªk] ²£¥ÍÀH¾÷ªº¹Bºâ²Å¸¹»P¼Æ¦r
+        /// [å…§éƒ¨æ–¹æ³•] ç”¢ç”Ÿéš¨æ©Ÿçš„é‹ç®—ç¬¦è™Ÿèˆ‡æ•¸å­—
         /// </summary>
         private ResultPair GenerateResult()
         {
             ResultPair result = new ResultPair();
 
-            // ÀH¾÷¨M©w¹Bºâ²Å¸¹ (0=Add, 1=Subtract, 2=Multiply)
+            // éš¨æ©Ÿæ±ºå®šé‹ç®—ç¬¦è™Ÿ (0=Add, 1=Subtract, 2=Multiply)
             int randomOpIndex = Random.Range(0, 3);
             result.op = (Operator)randomOpIndex;
 
-            // ÀH¾÷¨M©w¼Æ¦r (°²³]½d³ò 1~10)
-            int randomNumber = Random.Range(1, 10);
+            // éš¨æ©Ÿæ±ºå®šæ•¸å­— (å‡è¨­ç¯„åœ 1~10)
+            int randomNumber = Random.Range(0, 4);
             result.number = randomNumber;
 
             return result;
         }
 
         /// <summary>
-        /// [¤º³¡¤èªk] ­pºâ¹Bºâ«áªºª÷ÃB¨ÃÁÙµ¹ª±®a
+        /// [å…§éƒ¨æ–¹æ³•] è¨ˆç®—é‹ç®—å¾Œçš„é‡‘é¡ä¸¦é‚„çµ¦ç©å®¶
         /// </summary>
         private void ComputeAndPayBack(ResultPair result, int wager)
         {
-            // ªì©l»ù­È¬°­ì¥»ªº½äª`
+            // åˆå§‹åƒ¹å€¼ç‚ºåŸæœ¬çš„è³­æ³¨
             int finalValue = wager;
 
-            // ®Ú¾ÚÀH¾÷¥Xªº¹Bºâ²Å¸¹¹ï¡u½äª`¡v¶i¦æ¹Bºâ
+            // æ ¹æ“šéš¨æ©Ÿå‡ºçš„é‹ç®—ç¬¦è™Ÿå°ã€Œè³­æ³¨ã€é€²è¡Œé‹ç®—
             switch (result.op)
             {
                 case Operator.Add:
@@ -137,20 +163,20 @@ namespace HappyHarvest
                     break;
             }
 
-            // ¨¾¤îµ²ºâ»ù­È¤p©ó 0 (¦pªG¤£·QÅı½äª`ÅÜ¦¨­t¶Å)
+            // é˜²æ­¢çµç®—åƒ¹å€¼å°æ–¼ 0 (å¦‚æœä¸æƒ³è®“è³­æ³¨è®Šæˆè² å‚µ)
             if (finalValue < 0) finalValue = 0;
 
-            // ¨ú±o Player ¹ê¨Ò
+            // å–å¾— Player å¯¦ä¾‹
             PlayerController player = GameManager.Instance.Player;
 
-            // ±N¹Bºâ«áªº³Ì²×ª÷ÃB¡u¥[¦^¡vµ¹ª±®a
+            // å°‡é‹ç®—å¾Œçš„æœ€çµ‚é‡‘é¡ã€ŒåŠ å›ã€çµ¦ç©å®¶
             player.Coins += finalValue;
 
-            // ­pºâ²bÁÈ/½ß (¥Î©ó Log ©Î­µ®Ä§PÂ_)
+            // è¨ˆç®—æ·¨è³º/è³  (ç”¨æ–¼ Log æˆ–éŸ³æ•ˆåˆ¤æ–·)
             int netProfit = finalValue - wager;
-            Debug.Log($"[½ä³Õµ²ªG] §ë¤J: {wager} | ¹Bºâ: {result.op} {result.number} | ¨ú¦^: {finalValue} | ²bÅÜ°Ê: {netProfit}");
+            Debug.Log($"[è³­åšçµæœ] æŠ•å…¥: {wager} | é‹ç®—: {result.op} {result.number} | å–å›: {finalValue} | æ·¨è®Šå‹•: {netProfit}");
 
-            // ¦pªG¦³ÁÈ¿ú (¨ú¦^ªº¤ñ§ë¤Jªº¦h)¡A¼½©ñ­µ®Ä
+            // å¦‚æœæœ‰è³ºéŒ¢ (å–å›çš„æ¯”æŠ•å…¥çš„å¤š)ï¼Œæ’­æ”¾éŸ³æ•ˆ
             if (netProfit > 0)
             {
                 UIHandler.PlayBuySellSound(player.transform.position);
