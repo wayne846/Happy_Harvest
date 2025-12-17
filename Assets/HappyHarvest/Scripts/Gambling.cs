@@ -59,7 +59,7 @@ namespace HappyHarvest
             1   // 第 7 格
         };
 
-        public IndexPair index = new IndexPair();
+        private IndexPair index = new IndexPair();
 
         [Header("UI 連結")]
         [SerializeField] private GamblingUI gamblingUI;
@@ -76,12 +76,6 @@ namespace HappyHarvest
                 GameManager.Instance.GamblingSystem = this;
             }
         }
-
-        //private void Start()
-        //{
-        //    if (nameWeight == null) nameWeight = new List<int>();
-        //     if (symbolWeight == null) symbolWeight = new List<int>();
-        //}
 
         private void OnDestroy()
         {
@@ -102,7 +96,6 @@ namespace HappyHarvest
         /// <param name="wager">玩家下注的金額</param>
         public IndexPair StartGambling(int wager)
         {
-            Debug.Log("ingambling");
             // 1. 取得 Player 實例
             PlayerController player = GameManager.Instance.Player;
             Debug.Log(player.Coins);
@@ -112,7 +105,6 @@ namespace HappyHarvest
             {
                 // 強制在場景中搜尋掛有 PlayerController 的物件
                 player = FindObjectOfType<PlayerController>();
-                Debug.Log("findobj");
             }
 
             index.numIndex = -1;
@@ -143,7 +135,7 @@ namespace HappyHarvest
 
             if (gamblingUI != null)
             {
-                gamblingUI.OpenAndSpin(result.op, result.number, () =>
+                gamblingUI.OpenAndSpin(result, index.opIndex, index.numIndex, () =>
                 {
                     // 這是當 UI 按下 "確定" 後會回頭執行的程式碼
                     ComputeAndPayBack(result, wager);
@@ -168,10 +160,12 @@ namespace HappyHarvest
 
             // 隨機決定運算符號 (0=Add, 1=Subtract, 2=Multiply)
             index.opIndex = Random.Range(0, operatorSlots.Count);
+            Debug.Log(index.opIndex);
             result.op = operatorSlots[index.opIndex];
 
             // 隨機決定數字 (假設範圍 1~10)
             index.numIndex = Random.Range(0, numberSlots.Count);
+            Debug.Log(index.numIndex);
             result.number = numberSlots[index.numIndex];
 
             return result;
@@ -211,12 +205,6 @@ namespace HappyHarvest
             // 計算淨賺/賠 (用於 Log 或音效判斷)
             int netProfit = finalValue - wager;
             Debug.Log($"[賭博結果] 投入: {wager} | 運算: {result.op} {result.number} | 取回: {finalValue} | 淨變動: {netProfit}");
-
-            // 如果有賺錢 (取回的比投入的多)，播放音效
-            if (netProfit > 0)
-            {
-                UIHandler.PlayBuySellSound(player.transform.position);
-            }
         }
     }
 }

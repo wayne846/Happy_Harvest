@@ -16,10 +16,10 @@ namespace HappyHarvest
         public TMP_InputField bet; // 輸入賭注的地方
         public Button spin;         // 開始轉動的按鈕
         public Button return_to_farm;
-        //public TextMeshProUGUI resultText;// 顯示結果 (+500) 的文字
 
         [Header("顯示物件")]
         public GameObject resultImageObject; // 中獎/結果顯示圖
+        public TMP_Text reusult_text;
 
         [Header("錯誤提示圖")]
         public GameObject noMoneyImage;      // 情況 A：錢不夠時顯示
@@ -29,6 +29,12 @@ namespace HappyHarvest
         public Transform Wheel_Operator;
         public Transform Wheel_Number;
 
+        [Header("音效設定")]
+        public AudioSource audioSource;
+        public AudioClip roll;     // 轉動時的聲音 (會重複播放)
+        public AudioClip sad;
+        public AudioClip win;
+
         [Header("設定")]
         public int numberOfOperatorSlots = 8;
         public int numberOfNumberSlots = 8;
@@ -36,11 +42,13 @@ namespace HappyHarvest
         public int minFullSpins = 5;
         public int opIndex = 0;
         public int numIndex = 0;
+        public int wager = 0;
         public AnimationCurve spinCurve;
 
         private Action onSpinCompleteCallback;
         private bool isSpinning = false; // 防止重複點擊
         public Gambling.IndexPair index = new Gambling.IndexPair();
+        public Gambling.ResultPair resultPair = new Gambling.ResultPair();
 
         private void Start()
         {
@@ -57,6 +65,9 @@ namespace HappyHarvest
 
             // 初始化 UI 狀態
             //if (resultText != null) resultText.text = "";
+            resultImageObject.SetActive(false);
+            noMoneyImage.SetActive(false);
+            inputErrorImage.SetActive(false);
         }
 
         // 當玩家按下 "SPIN" 按鈕
@@ -70,7 +81,7 @@ namespace HappyHarvest
                 return;
             }
 
-            int wager = 0;
+            wager = 0;
             if (bet != null && int.TryParse(bet.text, out int result))
             {
                 wager = result;
@@ -96,13 +107,14 @@ namespace HappyHarvest
             // 呼叫系統
             if (GamblingSystem != null)
             {
-                var resultIndices = GamblingSystem.StartGambling(wager);
+                index = GamblingSystem.StartGambling(wager);
 
                 // 情況 A：系統回傳失敗 (-1) 代表錢不夠
-                if (resultIndices.opIndex == -1)
+                if (index.opIndex == 9 && index.numIndex == 9)
                 {
                     // ★ 顯示「錢不夠」的圖片
                     StartCoroutine(ShowWarningRoutine(noMoneyImage));
+                    return;
                 }
             }
         }
@@ -135,8 +147,11 @@ namespace HappyHarvest
         }
 
         // 被 Gambling.cs 呼叫，開始執行轉動動畫
-        public void OpenAndSpin(Gambling.Operator targetOp, int targetNum, Action onComplete)
+        public void OpenAndSpin(Gambling.ResultPair result, int opind, int numind, Action onComplete)
         {
+            resultPair = result;
+            index.opIndex = opind;
+            index.numIndex = numind;
             if (panelRoot != null) panelRoot.SetActive(true);
 
             onSpinCompleteCallback = onComplete;
@@ -159,6 +174,40 @@ namespace HappyHarvest
             yield return numSpin;
 
             // --- 轉動結束，直接結算 ---
+            int final = wager;
+
+            switch (resultPair.op)
+            {
+                case Gambling.Operator.Add:
+                    final += resultPair.number;
+                    break;
+                case Gambling.Operator.Subtract:
+                    final -= resultPair.number;
+                    break;
+                case Gambling.Operator.Multiply:
+                    final *= resultPair.number;
+                    break;
+            }
+
+            if (resultPair.op == Gambling.Operator.Subtract || resultPair.number == 0)
+            {
+                if (audioSource != null && roll != null)
+                {
+                    audioSource.PlayOneShot(sad);
+                }
+            }
+            else
+            {
+                if (audioSource != null && roll != null)
+                {
+                    audioSource.PlayOneShot(win);
+                }
+            }
+
+            // 防止結算價值小於 0 (如果不想讓賭注變成負債)
+            if (final < 0) final = 0;
+
+            showresult(wager.ToString() + " " + resultPair.op.ToString() + " " + resultPair.number.ToString() + "=" + final.ToString());
 
             // 1. 執行給錢邏輯
             onSpinCompleteCallback?.Invoke();
@@ -172,10 +221,10 @@ namespace HappyHarvest
         // 單個轉盤的轉動邏輯
         private IEnumerator SpinWheelRoutine(Transform wheel, int slots, int targetIndex)
         {
-            float anglePerSlot = 360f / slots;
+            float anglePerSlot = -360f / slots;
             // 假設 0 在正上方，根據你的貼圖可能需要調整 offset
             // 如果數字對不準，請調整這個 offset 值 (例如 + 18f 或 -18f)
-            float angleOffset = 22f;
+            float angleOffset = -22f;
 
             float targetAngle = (targetIndex * anglePerSlot) + angleOffset;
             float endAngle = -(360 * minFullSpins + targetAngle);
@@ -184,6 +233,10 @@ namespace HappyHarvest
             float timer = 0f;
             while (timer < spinDuration)
             {
+                if (audioSource != null && roll != null)
+                {
+                    audioSource.PlayOneShot(roll);
+                }
                 timer += Time.deltaTime;
                 float progress = timer / spinDuration;
                 float curveValue = spinCurve.Evaluate(progress);
@@ -196,23 +249,11 @@ namespace HappyHarvest
         }
 
         // 簡單的文字彈跳效果
-        private IEnumerator AnimateText(TextMeshProUGUI text)
+        private void showresult(string text)
         {
-            float timer = 0;
-            Vector3 originalScale = Vector3.one;
-            while (timer < 0.2f)
-            {
-                timer += Time.deltaTime;
-                text.transform.localScale = Vector3.Lerp(originalScale, originalScale * 1.5f, timer / 0.2f);
-                yield return null;
-            }
-            timer = 0;
-            while (timer < 0.1f)
-            {
-                timer += Time.deltaTime;
-                text.transform.localScale = Vector3.Lerp(originalScale * 1.5f, originalScale, timer / 0.1f);
-                yield return null;
-            }
+            reusult_text.text = text;
+            StartCoroutine(ShowWarningRoutine(resultImageObject));
+            reusult_text.text = "";
         }
     }
 }

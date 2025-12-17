@@ -1,32 +1,19 @@
-﻿using UnityEngine;
+﻿using HappyHarvest;
+using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class closePlayer: MonoBehaviour
+public class SceneObjectController : MonoBehaviour
 {
-    [Header("把你的主角物件拖進這裡")]
-    [SerializeField] private GameObject playerObject;
+    [Header("需要控制的物件")]
+    [SerializeField] private GameObject playerObject;      // 拖入你的 Character
+    [SerializeField] private GameObject gameManagerUI; // 拖入你的 GameManager
 
-    // 設定要隱藏主角的場景 Index (例如你的主選單是 4)
-    [SerializeField] private int menuSceneIndex = 4;
+    [Header("設定")]
+    [SerializeField] private int menuSceneIndex = 4; // 主選單的 Index
 
     private void Awake()
     {
-        // 確保這個 Manager 換場景時不會消失
-        DontDestroyOnLoad(gameObject);
-
-        // 防呆：如果忘記拉主角，嘗試自動抓取 (僅限主角是開啟狀態時才抓得到)
-        if (playerObject == null)
-        {
-            GameObject foundPlayer = GameObject.FindGameObjectWithTag("Player");
-            if (foundPlayer != null)
-            {
-                playerObject = foundPlayer;
-            }
-            else
-            {
-                Debug.LogWarning("PlayerVisibilityManager: 警告！沒有指定主角物件，且找不到 Tag 為 Player 的物件。");
-            }
-        }
+        DontDestroyOnLoad(gameObject); // 確保這個控制器自己不會死掉
     }
 
     private void OnEnable()
@@ -41,26 +28,25 @@ public class closePlayer: MonoBehaviour
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        // 如果沒有參考到主角，就無法做事
-        if (playerObject == null) return;
+        // 判斷是否在主選單
+        bool isMainMenu = (scene.buildIndex == 4 || scene.buildIndex == 5);
 
-        // 判斷邏輯
-        if (scene.buildIndex == menuSceneIndex)
+        // 控制主角開關
+        if (playerObject != null)
         {
-            // 在主選單 -> 關掉主角
-            // 因為是 Manager 在執行，即使主角被關掉，Manager 還是活著的，下次還能把他打開
-            playerObject.SetActive(false);
-            Debug.Log($"進入場景 {scene.buildIndex} (主選單)，已隱藏主角。");
+            // 如果是主選單 -> 關掉(false)；如果是遊戲 -> 打開(true)
+            // 驚嘆號 (!) 代表「反轉」的意思
+            playerObject.SetActive(!isMainMenu);
         }
-        else
-        {
-            // 在其他關卡 -> 打開主角
-            // 這裡要注意：如果主角本來就是開的，這行也不會有副作用
-            playerObject.SetActive(true);
-            Debug.Log($"進入場景 {scene.buildIndex} (遊戲關卡)，已顯示主角。");
 
-            // ★ 進階提示：如果你需要在這裡重設座標，可以在這裡呼叫 Player 身上的腳本
-            // playerObject.transform.position = new Vector3(0, 0, 0);
+        // 控制 GameManager 開關
+        if (GameManager.Instance != null)
+        {
+            // 取得 GameManager 掛載的那個 GameObject 並開關
+            Transform ui = GameManager.Instance.transform.Find("UI");
+            //ui.gameObject.SetActive(!isMainMenu);
         }
+
+        Debug.Log($"場景載入完成 (Index: {scene.buildIndex})。是否為選單: {isMainMenu}");
     }
 }
