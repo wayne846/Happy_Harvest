@@ -57,8 +57,13 @@ namespace HappyHarvest
 
         protected Label m_CointCounter;
 
+        // Market
         protected VisualElement m_MarketPopup;
         protected VisualElement m_MarketContentScrollview;
+
+        // Upgrade Market
+        protected VisualElement m_UpgradeMarketPopup;
+        protected VisualElement m_UpgradeMarketContentScrollview;
 
         protected Label m_TimerLabel;
 
@@ -142,8 +147,7 @@ namespace HappyHarvest
             }
             ////////////////////////////////
 
-            m_CointCounter = m_Document.rootVisualElement.Q<Label>("CoinAmount");
-
+            //////// 設定Market ////////
             m_MarketPopup = m_Document.rootVisualElement.Q<VisualElement>("MarketPopup");
             m_MarketPopup.Q<Button>("CloseButton").clicked += CloseMarket;
             m_MarketPopup.visible = false;
@@ -154,6 +158,17 @@ namespace HappyHarvest
             m_SellButton.clicked += ToggleToSell;
 
             m_MarketContentScrollview = m_MarketPopup.Q<ScrollView>("ContentScrollView");
+            ////////////////////////////////
+
+            //////// 設定Upgrade Market ////////
+            m_UpgradeMarketPopup = m_Document.rootVisualElement.Q<VisualElement>("UpgradeMarketPopup");
+            m_UpgradeMarketPopup.Q<Button>("CloseButton").clicked += CloseUpgradeMarket;
+            m_UpgradeMarketPopup.visible = false;
+
+            m_UpgradeMarketContentScrollview = m_UpgradeMarketPopup.Q<ScrollView>("ContentScrollView");
+            ////////////////////////////////
+
+            m_CointCounter = m_Document.rootVisualElement.Q<Label>("CoinAmount");
 
             m_TimerLabel = m_Document.rootVisualElement.Q<Label>("Timer");
 
@@ -585,6 +600,31 @@ namespace HappyHarvest
 
             m_GhostIcon.style.left = screenPosition.x - halfWidth;
             m_GhostIcon.style.top = screenPosition.y - halfHeight;
+        }
+        #endregion
+
+        #region Upgrade Market
+        public static void OpenUpgradeMarket()
+        {
+            s_Instance.OpenUpgradeMarket_Internal();
+            GameManager.Instance.Pause();
+        }
+
+        private void OpenUpgradeMarket_Internal()
+        {
+            m_UpgradeMarketPopup.visible = true;
+
+            //we open the Sell Tab by default
+            //ToggleToSell();
+
+            GameManager.Instance.Player.ToggleControl(false);
+        }
+
+        public static void CloseUpgradeMarket()
+        {
+            SoundManager.Instance.PlayUISound();
+            s_Instance.m_UpgradeMarketPopup.visible = false;
+            GameManager.Instance.Resume();
         }
         #endregion
     }
