@@ -25,5 +25,8 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/HappyHarvest/Scenes/Gambling.unity
     guid: 55fa301dfa3c2c7459138a3d290e1605
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
   m_configObjects: {}

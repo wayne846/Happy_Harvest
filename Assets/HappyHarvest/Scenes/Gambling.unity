@@ -821,7 +821,10 @@ RectTransform:
   - {fileID: 462974209}
   - {fileID: 1045856542}
   - {fileID: 2121495447}
+<<<<<<< Updated upstream
   - {fileID: 783711979}
+=======
+>>>>>>> Stashed changes
   m_Father: {fileID: 995163771}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -1213,9 +1216,13 @@ MonoBehaviour:
   bet: {fileID: 462974212}
   spin: {fileID: 463993862}
   return_to_farm: {fileID: 1045856543}
+<<<<<<< Updated upstream
   resultImageObject: {fileID: 0}
   noMoneyImage: {fileID: 2121495446}
   inputErrorImage: {fileID: 783711978}
+=======
+  resultText: {fileID: 0}
+>>>>>>> Stashed changes
   Wheel_Operator: {fileID: 1786990284}
   Wheel_Number: {fileID: 578773337}
   numberOfOperatorSlots: 8
@@ -2308,7 +2315,11 @@ GameObject:
   - component: {fileID: 2121495449}
   - component: {fileID: 2121495448}
   m_Layer: 5
+<<<<<<< Updated upstream
   m_Name: no_money
+=======
+  m_Name: Image
+>>>>>>> Stashed changes
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
