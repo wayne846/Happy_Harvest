@@ -583,6 +583,19 @@ namespace HappyHarvest
             // 條件：必須拖曳到有效格子，且不是拖曳到自己身上
             if (m_HoveredSlotIndex != -1 && m_HoveredSlotIndex != m_DragSourceIndex)
             {
+                var inventory = GameManager.Instance.Player.Inventory;
+                if (inventory.Entries[m_DragSourceIndex].Item == inventory.Entries[m_HoveredSlotIndex].Item)
+                {
+                    int remainSize = inventory.Entries[m_DragSourceIndex].Item.MaxStackSize - inventory.Entries[m_DragSourceIndex].StackSize;
+                    int moveSize = Mathf.Min(remainSize, inventory.Entries[m_HoveredSlotIndex].StackSize);
+                    inventory.Entries[m_HoveredSlotIndex].StackSize -= moveSize;
+                    inventory.Entries[m_DragSourceIndex].StackSize += moveSize;
+                    if (inventory.Entries[m_HoveredSlotIndex].StackSize == 0)
+                    {
+                        inventory.Entries[m_HoveredSlotIndex].Item = null;
+                    }
+                }
+
                 GameManager.Instance.Player.Inventory.SwapItem(m_DragSourceIndex, m_HoveredSlotIndex);
 
                 // 交換完畢後，重新整理 UI (UpdateInventory 會呼叫 UpdateFullInventory_Internal)
