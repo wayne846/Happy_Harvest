@@ -79,15 +79,17 @@ MonoBehaviour:
             m_BoolArgument: 0
           m_CallState: 2
   - displayName: Fish System
-    cost: 10
+    cost: 30
     isActive: 0
     requiredItems:
     - Item: {fileID: 11400000, guid: 7dd4bfa02c1367b44a3501547025f6b0, type: 2}
-      StackSize: 2
+      StackSize: 5
     - Item: {fileID: 11400000, guid: 8d7031074574f12499ac3cb4f19de9d3, type: 2}
-      StackSize: 2
+      StackSize: 5
     - Item: {fileID: 11400000, guid: 9e9f866ca785dac48a735a2cc4daf87a, type: 2}
-      StackSize: 2
+      StackSize: 5
+    - Item: {fileID: 11400000, guid: fda80188332cc7d4baa924f7fd6f52e4, type: 2}
+      StackSize: 1
     OnUpgradeSuccess:
       m_PersistentCalls:
         m_Calls:
@@ -114,7 +116,9 @@ MonoBehaviour:
     - Item: {fileID: 11400000, guid: 9e9f866ca785dac48a735a2cc4daf87a, type: 2}
       StackSize: 10
     - Item: {fileID: 11400000, guid: fda80188332cc7d4baa924f7fd6f52e4, type: 2}
-      StackSize: 1
+      StackSize: 3
+    - Item: {fileID: 11400000, guid: a68810b9bbc887d49b3cb8b9ec1e1d82, type: 2}
+      StackSize: 3
     OnUpgradeSuccess:
       m_PersistentCalls:
         m_Calls:
