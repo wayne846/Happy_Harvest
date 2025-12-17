@@ -156,12 +156,12 @@ namespace HappyHarvest
 
         private void FishMoveUp()
         {
-            FishMoveDistance = Random.Range(1f, 4f);
+            FishMoveDistance = Random.Range(10f, 30f);
         }
 
         private void FishMoveDown()
         {
-            FishMoveDistance = -Random.Range(-1f, 4f);
+            FishMoveDistance = -Random.Range(10f, 30f);
         }
     }
 }
