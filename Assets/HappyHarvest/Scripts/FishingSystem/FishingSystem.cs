@@ -12,6 +12,9 @@ namespace HappyHarvest
     public class FishingSystem : MonoBehaviour
     {
         [SerializeField]
+        [Tooltip("This decides how much reel progress gains per click.")]
+        private float ReelInDistance;
+        [SerializeField]
         [Tooltip("This decides how much reel progress drops per second.")]
         private float ReelDropRate;
         [SerializeField]
@@ -55,9 +58,9 @@ namespace HappyHarvest
         private void IntializeChanceTable()
         {
             movementWF = new List<WeightedFunction> {
-                new WeightedFunction { weight = 0.25f, action = FishMoveUp },
-                new WeightedFunction { weight = 0.25f, action = FishMoveDown },
-                new WeightedFunction { weight = 0.5f,  action = RandomWeightedFunction.DoNothing}
+                new WeightedFunction { weight = 0.5f, action = FishMoveUp },
+                new WeightedFunction { weight = 0.5f, action = FishMoveDown },
+                new WeightedFunction { weight = 0.25f,  action = RandomWeightedFunction.DoNothing}
                 };
         }
 
@@ -86,7 +89,7 @@ namespace HappyHarvest
         public void ReelIn()
         {
             
-            reelPosition += 5.0f;
+            reelPosition += ReelInDistance;
             reelPosition = Mathf.Min(reelPosition, 100);
         }
 
@@ -103,7 +106,7 @@ namespace HappyHarvest
 
             float originalFishPosition = fishPosition;
 
-            FishMovementCooldown = 0;
+            FishMovementCooldown = FishMovementRate;
             while (captureProgress < 100f)
             {
                 reelPosition -= ReelDropRate * Time.deltaTime;
@@ -126,8 +129,8 @@ namespace HappyHarvest
                     FishMovementCooldown++;
                 }
 
-                if (Math.Abs(reelPosition - fishPosition) <= 5f)
-                {
+                if (Math.Abs(reelPosition - fishPosition) <= 7.5f)
+                {   
                     captureProgress = Mathf.Min(captureProgress + CaptureRate * Time.deltaTime, 100f);
                 }
 
