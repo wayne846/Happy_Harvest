@@ -13,7 +13,7 @@ namespace HappyHarvest
         {
             if (GameManager.Instance.FishingSystem.UnlockState)
             {
-                UIHandler.OpenFishingSpot();
+                GameManager.Instance.FishingSystem.StartFishing();
             }
             else
             {

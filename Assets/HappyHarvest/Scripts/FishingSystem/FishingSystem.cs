@@ -37,7 +37,8 @@ namespace HappyHarvest
         private List<WeightedFunction> movementWF;
 
         public event Action OpenFishingGameUI;
-        public event Action<float, float, float, float> UpdateUIGameInfo;
+        public event Action CloseFishingGameUI;
+        public event Action<float, float, float> UpdateUIGameInfo;
         public event Action ReelAnimation;
 
         //Info
@@ -94,65 +95,53 @@ namespace HappyHarvest
             OpenFishingGameUI?.Invoke();
             GameManager.Instance.Player.ToggleFish(true);
 
-            remainTime = 100f;
-            while (remainTime > 0f)
+
+            FishMoveDistance = 0f;
+            fishPosition = 0f;
+            reelPosition = 0f;
+            captureProgress = 0f;
+
+            float originalFishPosition = fishPosition;
+
+            FishMovementCooldown = 0;
+            while (captureProgress < 100f)
             {
-                FishMoveDistance = 0f;
-                fishPosition = 0f;
-                reelPosition = 0f;
-                captureProgress = 0f;
+                reelPosition -= ReelDropRate * Time.deltaTime;
+                reelPosition = Mathf.Max(reelPosition, 0);
 
-                float originalFishPosition = fishPosition;
+                fishPosition = originalFishPosition + Mathf.Lerp(0, FishMoveDistance, ((float)FishMovementCooldown / FishMovementRate));
 
-                FishMovementCooldown = 0;
-                while (captureProgress < 100f)
+                fishPosition = Mathf.Clamp(fishPosition, 0f, 100f);
+
+                if (FishMovementCooldown == FishMovementRate)
                 {
-                    if(remainTime <= 0f)
-                    {
-                        break;
-                    }
+                    FishMoveDistance = 0f;
+                    originalFishPosition = fishPosition;
 
-                    reelPosition -= ReelDropRate * Time.deltaTime;
-                    reelPosition = Mathf.Max(reelPosition, 0);
-
-                    fishPosition = originalFishPosition + Mathf.Lerp(0, FishMoveDistance, ((float)FishMovementCooldown / FishMovementRate));
-
-                    fishPosition = Mathf.Clamp(fishPosition, 0f, 100f);
-
-                    if (FishMovementCooldown == FishMovementRate)
-                    {
-                        FishMoveDistance = 0f;
-                        originalFishPosition = fishPosition;
-
-                        RandomWeightedFunction.Pick(movementWF).Invoke();
-                        FishMovementCooldown = 0;
-                    }
-                    else
-                    {
-                        FishMovementCooldown++;
-                    }
-
-                    if (Math.Abs(reelPosition - fishPosition) <= 5f)
-                    {
-                        captureProgress = Mathf.Min(captureProgress + CaptureRate * Time.deltaTime, 100f);
-                    }
-
-
-
-                    remainTime -= Time.deltaTime;
-
-                    UpdateUIGameInfo?.Invoke(remainTime, captureProgress, reelPosition, fishPosition);
-                    yield return null;
+                    RandomWeightedFunction.Pick(movementWF).Invoke();
+                    FishMovementCooldown = 0;
                 }
-                   
-                if(captureProgress >= 100f)
+                else
                 {
-                    yield return CaptureFish();
+                    FishMovementCooldown++;
                 }
+
+                if (Math.Abs(reelPosition - fishPosition) <= 5f)
+                {
+                    captureProgress = Mathf.Min(captureProgress + CaptureRate * Time.deltaTime, 100f);
+                }
+
+
+
+                remainTime -= Time.deltaTime;
+
+                UpdateUIGameInfo?.Invoke(captureProgress, reelPosition, fishPosition);
+                yield return null;
             }
+               
+            yield return CaptureFish();
 
-
-            StopFishing();
+            CloseFishingGameUI?.Invoke();
         }
 
         private IEnumerator CaptureFish()

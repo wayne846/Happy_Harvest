@@ -27,6 +27,7 @@ namespace HappyHarvest
             fishingSystem = _fishingSystem;
 
             fishingSystem.OpenFishingGameUI += Open;
+            fishingSystem.CloseFishingGameUI += Close;
             fishingSystem.UpdateUIGameInfo += UpdateUI;
             fishingSystem.ReelAnimation += ReelAnimation;
 
@@ -35,6 +36,7 @@ namespace HappyHarvest
 
         public void Open()
         {
+            fishingGameUIController.Reset();
             m_Instance.SetActive(true);
         }
 
@@ -44,9 +46,8 @@ namespace HappyHarvest
             fishingSystem.StopFishing();
         }
 
-        public void UpdateUI(float remaingTime, float captureProgress, float reelPosition, float fishPosition)
+        public void UpdateUI(float captureProgress, float reelPosition, float fishPosition)
         {
-            fishingGameUIController.UpdateTimer(remaingTime);
             fishingGameUIController.UpdateCaptureProgress(captureProgress);
             fishingGameUIController.UpdateReelBar(reelPosition);
             fishingGameUIController.UpdateFish(fishPosition);

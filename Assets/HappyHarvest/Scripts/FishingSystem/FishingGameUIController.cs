@@ -11,9 +11,7 @@ namespace HappyHarvest {
         [SerializeField]
         private Button CloseButton;
         [SerializeField]
-        private TextMeshProUGUI Timer;
-        [SerializeField]
-        private TextMeshProUGUI Capture;
+        private Image Capture;
 
         [Header("Settings")]
         [SerializeField]
@@ -43,17 +41,15 @@ namespace HappyHarvest {
             fishingGameUI = _fishingGameUI;
         }
 
-        public void UpdateTimer(float time)
+        public void Reset()
         {
-            int minute = (int)(time / 60f);
-            int second = (int)time % 60;
-
-            Timer.text = string.Format("{0:D2}:{1:D2}", minute, second);
+            FishIcon.transform.localPosition = new Vector3(0, 0, 1);
         }
-        
+
         public void UpdateCaptureProgress(float capture)
         {
-            Capture.text = capture.ToString("F2");
+            float newHeight = capture * 7.9f;
+            Capture.rectTransform.sizeDelta = new Vector2(20, newHeight);
         }
 
         public void UpdateReelBar(float position)
@@ -87,9 +83,6 @@ namespace HappyHarvest {
                 animationTime += Time.deltaTime;
                 yield return null;
             }
-
-            yield return new WaitForSeconds(3 - animationTime);
-            FishIcon.transform.localPosition = new Vector3();
         }
 
         public void Close()
