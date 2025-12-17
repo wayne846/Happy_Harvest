@@ -152,11 +152,6 @@ namespace HappyHarvest
             resultPair = result;
             index.opIndex = opind;
             index.numIndex = numind;
-<<<<<<< Updated upstream
-            Debug.Log(opind);
-            Debug.Log(numIndex);
-=======
->>>>>>> Stashed changes
             if (panelRoot != null) panelRoot.SetActive(true);
 
             onSpinCompleteCallback = onComplete;
@@ -194,8 +189,6 @@ namespace HappyHarvest
                     break;
             }
 
-<<<<<<< Updated upstream
-=======
             if (resultPair.op == Gambling.Operator.Subtract || resultPair.number == 0)
             {
                 if (audioSource != null && roll != null)
@@ -211,7 +204,6 @@ namespace HappyHarvest
                 }
             }
 
->>>>>>> Stashed changes
             // 防止結算價值小於 0 (如果不想讓賭注變成負債)
             if (final < 0) final = 0;
 
@@ -241,15 +233,9 @@ namespace HappyHarvest
             float timer = 0f;
             while (timer < spinDuration)
             {
-<<<<<<< Updated upstream
-                if (roll != null)
-                {
-                    roll.LoadAudioData();
-=======
                 if (audioSource != null && roll != null)
                 {
                     audioSource.PlayOneShot(roll);
->>>>>>> Stashed changes
                 }
                 timer += Time.deltaTime;
                 float progress = timer / spinDuration;
